@@ -1,0 +1,17 @@
+#!/bin/bash
+banner "Cleaning your install..."
+rm -rfv ${DREKAR_BUILD_DIR}/../../install/*
+banner "Cleaning your build..."
+rm -rfv ${DREKAR_BUILD_DIR}/*
+banner "Configuring..."
+cd ${DREKAR_BUILD_DIR}                                                     && \
+  ../configureDrekarInitial | logit config
+banner "Building..."
+cd ${DREKAR_BUILD_DIR}                                                     && \
+  makeit                                                                   && \
+  banner "Installing..."                                                   && \
+  make install                                                             && \
+  banner "Configuring again..."                                            && \
+  ../configureDrekar | logit config                                        && \
+  banner "Building again..."                                               && \
+  makeit

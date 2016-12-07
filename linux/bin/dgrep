@@ -1,0 +1,2 @@
+#!/bin/bash
+grep --color -ni $2 $(grep -rsIil $1 *)

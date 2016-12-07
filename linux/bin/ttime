@@ -1,0 +1,29 @@
+#!/bin/bash
+if [[ $# -lt 2 ]]; then
+  echo "Usage:  ttime totalTimeFile commandOrScript..."
+  echo "  totalTimeFile:    The relative or absolute path to the file in which you store"
+  echo "                    your total time results.  If this file does not yet exist,"
+  echo "                    it will be created for you."
+  echo "  commandOrScript:  The command or script you wish to execute, for which you"
+  echo "                    wish to keep track of how much time you spend waiting for it"
+  echo "                    to finish."
+  exit 1
+fi
+tempFile=~/.ttimeTempFile
+tempTotal=~/.ttimeTempTotal
+timeConvert=~/bin/timeConvert.awk
+outputFile="$1"
+shift
+/usr/bin/time -f "%e" -o $tempFile "$@"
+test -e $outputFile || echo 0.00 > $outputFile
+head -1q $outputFile $tempFile | awk '{s+=$1} END {print s}' > $tempTotal
+cp -f $tempTotal $outputFile
+awk -f $timeConvert $tempTotal >> $outputFile
+rm -f $tempTotal
+echo "--------------------------------------------------------------------------------"
+echo -n "Execution time:  "
+awk -f $timeConvert $tempFile
+rm -f $tempFile
+echo -n "Total time:      "
+tail -1 $outputFile
+exit 0

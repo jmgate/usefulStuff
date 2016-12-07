@@ -1,0 +1,12 @@
+#!/bin/bash
+fileName=$1$(datetag).log
+tee $fileName                                                             && \
+  echo                                                                    && \
+  echo -n "The output above was saved in $fileName"
+#tee $fileName                                                             && \
+#  echo >> $fileName                                                       && \
+#  echo "The command that generated this log file was:" >> $fileName       && \
+#  echo "$(history | tail -n 4 | head -n 1 | cut -f 1-3 -d ' ' --complement)" \
+#    >> $fileName                                                          && \
+#  echo                                                                    && \
+#  echo -n "The output above was saved in $fileName"

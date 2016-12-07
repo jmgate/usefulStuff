@@ -1,0 +1,226 @@
+#!/bin/bash
+
+###############################################################################
+#
+#  The following script is an attempt to automate updating Nvidia's proprietary
+#  display drivers anytime you wind up updating your Linux kernel.  It requires
+#  a bit of user-interaction, as you need to download the correct drivers for
+#  your video card from Nvidia's website.  The rest of it should be automated.
+#
+###############################################################################
+
+# Check to see that this script is being run as root or through sudo.  It won't
+# work otherwise.
+if [[ $(id -u) -ne 0 ]]; then
+  echo "This script must be run as root."
+  exit 1
+fi
+home=/home/$(logname)
+downloads=$home/Downloads
+
+###############################################################################
+#
+#  banner()
+#
+#  This function just takes a string and prints it out in a box so it's easier
+#  to see what the script is doing at any point in time.
+#
+###############################################################################
+banner()
+{
+  input="$@"
+  line=1
+  while [ ${#input} -gt 75 ]; do
+    pos=0
+    for i in $(seq 74 -1 0); do
+      if [[ ${input:$i:1} == [[:space:]] ]]; then
+        pos=$i
+        break
+      fi
+    done
+    text[$line]=${input:0:$pos}
+    input=${input:$(($pos + 1))}
+    line=$(($line + 1))
+  done
+  text[$line]=$input
+  string="┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  string="${string}━━━━━━━━━━┓"
+  echo "$string"
+  for i in $(seq 1 $line); do
+    string="┃                                                                 "
+    string="${string}            ┃"
+    echo -n "$string"
+    echo -e "\r┃ ${text[$i]}"
+  done
+  string="┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  string="${string}━━━━━━━━━━┛"
+  echo "$string"
+}
+
+###############################################################################
+#
+#  beforeReboot()
+#
+#  The script is divided into two parts which are executed before and after a
+#  reboot.  This function executes first when the user initially runs this
+#  script.
+#
+###############################################################################
+beforeReboot()
+{
+  string="This script will attempt to update your Nvidia display drivers after"
+  string="${string} you've"
+  echo "$string"
+  echo "updated your Linux kernel."
+  echo
+
+  # First we need to update the PCI ID list to ensure we'll be able to find the
+  # graphics card when we go looking for it.
+  banner "Updating the PCI ID list."
+  update-pciids
+  echo
+
+  # Next we'll display the graphics card information, because the user will
+  # need it to find the appropriate drivers on Nvidia's website.
+  string="Please download the latest Nvidia driver for your particular graphic"
+  string="${string}s cards.  To aid in selecting the right driver, your graphi"
+  string="${string}c card details are below:"
+  banner "$string"
+  echo
+  letsDoThisThing=true
+  gpuFile=/tmp/gpuInfo
+  lspci -vnn | grep VGA -A 12 > $gpuFile
+  cat $gpuFile
+
+  # If the graphics card information doesn't have a case-insensitive occurrence
+  # of "nvidia" in it anywhere, the user might not have an Nvidia card and we
+  # should probably quit.
+  grep -qi nvidia $gpuFile
+  if [[ $? -ne 0 ]]; then
+    letsDoThisThing=false
+    string="It doesn't look like you have an Nvidia card.  Are you sure you wa"
+    string="${string}nt to"
+    echo "$string"
+    read -r -p "continue? [y/N] " response
+    echo
+    if [[ -z "$response" || $response =~ ([Nn][Oo]|[Nn])$ ]]; then
+      rm $gpuFile
+      exit 2
+    elif [[ $response =~ ([Yy][Ee][Ss]|[Yy])$ ]]; then
+      letsDoThisThing=true
+    fi
+  fi
+  rm $gpuFile
+  if [[ letsDoThisThing ]]; then
+
+    # The user then needs to download the appropriate driver installation
+    # script and put it in their Downloads directory.
+    banner "Place the latest driver installation script in $downloads/."
+    xdg-open http://www.nvidia.com/Download/index.aspx?lang=en-us &
+    sleep 2
+    read -r -n 1 -s -p "Once that's done, press any key to continue."
+    echo
+
+    # Now we need to check to see that we can actually find that script in the
+    # Downloads folder.
+    lsResults=/tmp/lsResults
+    ls $downloads/NVIDIA* > $lsResults
+    grep -qi nvidia $lsResults
+    if [[ $? -ne 0 ]]; then
+      echo "I can't seem to find the installation script in $downloads/."
+      exit 3
+    fi
+    rm $lsResults
+
+    # Next we need to update our system and make some necessary changes to
+    # Grub2.
+    banner "Running yum update."
+    yum update -y
+    echo
+    banner "Making a Grub2 config file."
+    grub2-mkconfig -o /boot/grub2/grub.cfg
+    echo
+    banner "Setting the default Grub2 menu entry."
+    grub2-set-default \
+      "$(awk -F\' '$1=="menuentry " {print $2}' /etc/grub2.cfg | head -n 1)"
+    echo
+    string="The system will now reboot into multi-user (command-line) mode.  Y"
+    string="${string}ou will need to enter your username, password, and sudo-p"
+    string="${string}assword, and then this script will restart."
+    banner "$string"
+    read -r -n 1 -s -p "Press any key to continue."
+  else # if the user entered something unexpected
+    exit 2
+  fi # end if [[ letsDoThisThing ]]
+} # end of beforeReboot()
+
+###############################################################################
+#
+#  afterReboot()
+#
+#  This is where the script picks back up after the system has rebooted itself
+#  into multi-user (command-line) mode.  The reboot was necessary because we
+#  can't run the Nvidia installer in graphical mode.
+#
+###############################################################################
+afterReboot()
+{
+  # Now we can finally run the driver installation script.
+  banner "Running the Nvidia driver installation script."
+  chmod +x $(ls -t $downloads/NVIDIA* | head -n 1)
+  $(ls -t $downloads/NVIDIA* | head -n 1) --accept-license --no-questions \
+    --force-update
+
+  # Next we'll back up the old initramfs and create a new one.
+  banner "Backing up the old initramfs."
+  mv /boot/initramfs-$(uname -r).img \
+    /boot/initramfs-$(uname -r)-backup$(date +%m%d%y%H%M%N).img
+  banner "Creating the new initramfs."
+  dracut /boot/initramfs-$(uname -r).img $(uname -r)
+
+  # Finally we can reboot into graphical mode.
+  string="The system will now reboot back into graphical mode and you should b"
+  string="${string}e good to go."
+  banner "$string"
+  read -r -n 1 -s -p "Press any key to continue."
+} # end of afterReboot()
+
+###############################################################################
+#
+#  This is where we finally get to the script itself.  If the user just
+#  executed this script, we'll go through the else block below.  If this script
+#  is being executed by itself after a reboot, we'll go through the first bit
+#  of the if block.
+#
+###############################################################################
+fileName=/tmp/rebootingForNvidiaUpdates
+if [ -f $fileName ]; then
+  afterReboot
+
+  # Remove what we added to the user's .bashrc file to restart this script
+  # after the reboot.
+  numRows=$(cat $home/.bashrc | wc -l)
+  cp $home/.bashrc $home/.bashrc.backup$(date +%m%d%y%H%M%N)
+  head -n $(($numRows - 2)) $home/.bashrc > $home/.bashrcNew
+  mv $home/.bashrcNew $home/.bashrc
+
+  # Remove a file such that this script will call beforeReboot() the next time
+  # it's run.
+  rm $fileName
+  systemctl set-default graphical.target
+  reboot
+else
+  beforeReboot
+
+  # Add a line to the user's .bashrc file to restart this script after the
+  # reboot.
+  script=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/$(basename "$0")
+  echo "" >> $home/.bashrc
+  echo "sudo $script" >> $home/.bashrc
+
+  # Create a file to indicate to this script that it should call afterReboot()
+  # the next time it's run.
+  touch $fileName
+  systemctl set-default multi-user.target
+  reboot
+fi

@@ -1,0 +1,3 @@
+#!/bin/bash
+stImpl $@ |& logit st
+sed -i "s/^.*//" $(latest st)

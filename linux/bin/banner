@@ -1,0 +1,33 @@
+#!/bin/bash
+input="$@"
+line=1
+while [ ${#input} -gt 75 ]; do
+###############################################################################
+#
+#  MIGHT WANT TO CHECK FOR NEWLINES AS WELL.
+#
+###############################################################################
+  pos=0
+  for i in $(seq 74 -1 0); do
+    if [[ ${input:$i:1} == [[:space:]] ]]; then
+      pos=$i
+      break
+    fi
+  done
+  text[$line]=${input:0:$pos}
+  input=${input:$(($pos + 1))}
+  line=$(($line + 1))
+done
+text[$line]=$input
+string="┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+string="${string}━━━━━━━━┓"
+echo "$string"
+for i in $(seq 1 $line); do
+  string="┃                                                                   "
+  string="${string}          ┃"
+  echo -n "$string"
+  echo -e "\r┃ ${text[$i]}"
+done
+string="┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+string="${string}━━━━━━━━┛"
+echo "$string"

@@ -1,0 +1,7 @@
+set colored-stats on
+set completion-ignore-case on
+set completion-map-case on
+set completion-query-items -1
+set mark-symlinked-directories on
+set show-all-if-ambiguous on
+set page-completions off

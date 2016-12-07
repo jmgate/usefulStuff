@@ -1,0 +1,11 @@
+#!/bin/bash
+echo
+read -t 5 -r -p "Would you like to clean /tmp/openmpi-sessions*? [y/N] " response
+if [[ $response =~ ([Yy][Ee][Ss]|[Yy])$ ]]; then
+  rm -rfv /tmp/openmpi-sessions*
+elif [[ $? != 0 || -z "$response" || $response =~ ([Nn][Oo]|[Nn])$ ]]; then
+  echo
+  echo "Leaving /tmp/openmpi-sessions* intact."
+  echo "If you wind up with random MPI errors, you may want to clean out that directory."
+fi
+ttime ~/.totalTestTime testit

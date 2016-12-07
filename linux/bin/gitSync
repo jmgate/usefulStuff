@@ -1,0 +1,3 @@
+#!/bin/bash
+gitSyncImpl $@ |& logit gitSync
+sed -i "s/^.*//" $(latest gitSync)

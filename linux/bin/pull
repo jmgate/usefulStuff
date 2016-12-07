@@ -1,0 +1,3 @@
+#!/bin/bash
+pullImpl $@ |& logit pull
+sed -i "s/^.*//" $(latest pull)
