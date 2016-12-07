@@ -1,0 +1,218 @@
+%\documentclass[draft]{memoir}
+\documentclass{memoir}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Package Includes
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\usepackage{booktabs}
+%\usepackage{fancyhdr}
+%\usepackage{fancyvrb}
+%\usepackage{graphicx}
+%\usepackage{multicol}
+%\usepackage{nag}
+%\usepackage[parfill]{parskip}
+%\usepackage{tikz}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{calc}
+\usepackage{collect}
+\usepackage[T1]{fontenc}
+\usepackage{listings}
+\usepackage[tracking=true,final]{microtype}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\usepackage{picture}
+\usepackage{tikzsymbols}
+\usepackage{todonotes}
+\usepackage{verbatim}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=red!80!black,urlcolor=magenta!80!black]{hyperref}
+\usepackage[capitalise,noabbrev]{cleveref}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Document Setup
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newsubfloat{figure}
+\lstset{language=C++,breaklines=true,breakatwhitespace=true}
+\pgfplotsset{compat=1.12}
+\usepgfplotslibrary{statistics}
+%\usepgfplotslibrary{clickable}
+%\usepgfplotslibrary{external}
+%\tikzexternalize
+%\usetikzlibrary{shapes.misc}
+\usetikzlibrary{positioning}
+\usetikzlibrary{calc}
+%\usetikzlibrary{matrix}
+\usetikzlibrary{fit}
+\usetikzlibrary{backgrounds}
+\usetikzlibrary{intersections}
+%\usetikzlibrary{graphs,graphdrawing}
+%\usegdlibrary{trees,layered}
+\setlength{\footmarkwidth}{-1sp}
+\setlength{\footmarksep}{0em}
+\tightlists
+\newcommand{\classification}[2]{%
+	\begin{picture}(0,0)%
+		\put(#1,#2){\makebox(0,0){\textcolor{gray}{%
+			\footnotesize%
+			INSERT TEXT HERE%
+		}}}%
+	\end{picture}%
+}
+\newlength{\myThepageWidth}
+\makeoddhead{plain}{}{\classification{0}{\uppermargin/2-\headheight/2-\headsep/2}}{}
+\makeoddfoot{plain}{}{\thepage\settowidth{\myThepageWidth}{\thepage}\classification{-\myThepageWidth/2}{\uppermargin/2+\textheight/2+\footskip/2-\paperheight/2}}{}
+\makeevenhead{plain}{}{\classification{0}{\uppermargin/2-\headheight/2-\headsep/2}}{}
+\makeevenfoot{plain}{}{\thepage\settowidth{\myThepageWidth}{\thepage}\classification{-\myThepageWidth/2}{\uppermargin/2+\textheight/2+\footskip/2-\paperheight/2}}{}
+\makeoddhead{companion}{\normalfont\bfseries\rightmark}{\classification{-\marginparwidth/2-\marginparsep/2}{\uppermargin/2-\headheight/2-\headsep/2}}{\normalfont\bfseries\thepage}
+\makeoddfoot{companion}{}{\classification{0}{\uppermargin/2+\textheight/2+\footskip/2-\paperheight/2}}{}
+\makeevenhead{companion}{\normalfont\bfseries\thepage}{\classification{\marginparwidth/2+\marginparsep/2}{\uppermargin/2-\headheight/2-\headsep/2}}{\normalfont\bfseries\leftmark}
+\makeevenfoot{companion}{}{\classification{0}{\uppermargin/2+\textheight/2+\footskip/2-\paperheight/2}}{}
+\newcommand{\abcd}{\mathit{ABCD}}
+\newcommand{\overbar}[3]{\mkern #2 \overline{\mkern -#2 #1 \mkern -#3}\mkern #3}
+\newcommand{\mean}[1]{\overbar{#1}{4mu}{1mu}}
+\newcommand{\pe}{+\!\!\!\:=}
+\newcommand{\me}{-\!\!\!\:=}
+\renewcommand{\vec}[1]{\mathbf{#1}}
+\renewcommand*{\footnoterule}{}
+\providecommand{\abs}[1]{\left\lvert#1\right\rvert}
+\providecommand{\norm}[1]{\left\lVert#1\right\rVert}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Begin Document
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\frontmatter
+
+\begin{titlingpage}
+\begin{tikzpicture}[remember picture,overlay]
+	\draw[yellow,fill=yellow] (current page.north west) -- (current page.north east) -- ([yshift=-0.75in]current page.north east) -- ([yshift=-1.25in]current page.north west) -- cycle;
+	\draw[yellow,fill=yellow] ([yshift=-6.25in]current page.north west) -- ([yshift=-5.75in]current page.north east) -- (current page.south east) -- (current page.south west) -- cycle;
+	\draw[cyan,fill=cyan] ([yshift=-6.25in]current page.north west) -- ([yshift=-5.75in]current page.north east) -- ([yshift=-6.1in]current page.north east) -- ([yshift=-6.6in]current page.north west) -- cycle;
+	\fill[yellow] ([xshift=3in,yshift=-0.8in]current page.center) circle[x radius=2.625in,y radius=1.575in];
+	\fill[cyan] ([xshift=3in,yshift=2.5in]current page.south) .. controls ([xshift=3.5in,yshift=3in]current page.south) and ([xshift=3.5in,yshift=3.5in]current page.south) .. ([xshift=3.25in,yshift=4in]current page.south) -- ([xshift=3.75in,yshift=4in]current page.south) .. controls ([xshift=4in,yshift=3.5in]current page.south) and ([xshift=4in,yshift=3in]current page.south) .. cycle;
+	\fill[cyan] ([xshift=3in,yshift=-0.8in]current page.center) circle[x radius=2.5in,y radius=1.5in];
+	\draw[black,fill=black] ([yshift=-1.25in]current page.north west) -- ([yshift=-0.75in]current page.north east) -- ([yshift=-5.75in]current page.north east) -- ([yshift=-6.25in]current page.north west) -- cycle;
+	\node[white,scale=10,rotate=3.366] at ([yshift=3in]current page.center) {$\mathit{Something}$};
+	\node[yellow,scale=3,rotate=3.366] at ([yshift=1.75in]current page.center) {\textbf{\textsf{FOR}}};
+	\node[yellow,scale=10,rotate=3.366] at ([yshift=0.75in]current page.center) {\textbf{\textsf{DUMMIES}}};
+	\node[black,above right,scale=3] at ([xshift=0.28in,yshift=1.5in]current page.south west) {\textbf{\textsf{Jason M. Gates}}};
+	\node[black,above right,align=left,text width=2.0in,scale=1.5] at ([xshift=0.35in,yshift=1.0in]current page.south west) {\textbf{\textsf{\textsl{Bestselling author of absolutely nothing!}}}};
+	\node[cyan,scale=4,right] at ([xshift=0.2in,yshift=3.4in]current page.south west) {\textbf{\textsf{\textsl{A Reference}}}};
+	\node[cyan,scale=3,right] at ([xshift=1.0in,yshift=3.0in]current page.south west) {\textbf{\textsf{\textsl{for the}}}};
+	\node[cyan,scale=4,right] at ([xshift=0.5in,yshift=2.65in]current page.south west) {\textbf{\textsf{\textsl{Rest of Us!}}}};
+	\node[cyan,above right,rotate=3.366,scale=1.5] at ([xshift=0.2in,yshift=-0.9in]current page.north west) {\textbf{\textsf{\textsl{Compute stuff, adjust stuff, do more stuff}}}};
+	\node[cyan,above right,rotate=3.366,scale=2] at ([xshift=0.2in,yshift=-1.25in]current page.north west) {\textbf{\textsf{\textsl{---no experience required!}}}};
+	\node[white,right=2ex,rotate=3.366,scale=1.5] at ([yshift=-6.425in]current page.north west) {\textbf{\textsf{\textsl{1st Edition---June, 2016}}}};
+	\node[white,align=left,scale=2] at ([xshift=2.5in,yshift=-1.1in]current page.center) {\textbf{\textsf{Find something}}\\\textbf{\textsf{amazing}}\\\textbf{\textsf{for the first time!}}};
+	
+	% Character
+	\fill[white,draw=black,ultra thick] ([xshift=0.92in,yshift=2.83in]current page.south) .. controls ([xshift=0.83in,yshift=3in]current page.south) and ([xshift=0.67in,yshift=2.83in]current page.south) .. ([xshift=0.75in,yshift=2.67in]current page.south) -- ([xshift=1.08in,yshift=1.92in]current page.south) .. controls ([xshift=1.25in,yshift=1.67in]current page.south) and ([xshift=1.42in,yshift=1.83in]current page.south) .. ([xshift=1.33in,yshift=2.08in]current page.south) -- cycle; % ear
+	\fill[white,draw=black,ultra thick] ([xshift=2.42in,yshift=3.25in]current page.south) .. controls ([xshift=2.46in,yshift=3.5in]current page.south) and ([xshift=2.76in,yshift=3.42in]current page.south) .. ([xshift=2.67in,yshift=3.08in]current page.south) -- ([xshift=2.54in,yshift=2.33in]current page.south) .. controls ([xshift=2.5in,yshift=2.08in]current page.south) and ([xshift=2.25in,yshift=2in]current page.south) .. ([xshift=2.25in,yshift=2.33in]current page.south) -- cycle; % ear
+	\fill[black] ([xshift=2in,yshift=-1in]current page.south) circle[radius=1.5in]; % body
+	\fill[black,ultra thick] ([xshift=0.92in,yshift=2.83in]current page.south) -- ([xshift=0.58in,yshift=3.42in]current page.south) -- ([xshift=2.5in,yshift=3.75in]current page.south) -- ([xshift=2.42in,yshift=3.25in]current page.south) -- ([xshift=2.33in,yshift=3.58in]current page.south) -- ([xshift=1.67in,yshift=3.25in]current page.south) -- ([xshift=0.92in,yshift=3.25in]current page.south) -- cycle; % hair
+	\fill[white,draw=black,ultra thick] ([xshift=0.92in,yshift=2.83in]current page.south) -- ([xshift=2in,yshift=0.33in]current page.south) -- ([xshift=2.42in,yshift=3.25in]current page.south) -- ([xshift=2.33in,yshift=3.58in]current page.south) -- ([xshift=1.67in,yshift=3.25in]current page.south) -- ([xshift=0.92in,yshift=3.25in]current page.south) -- cycle; % face
+	\fill[white,draw=black,ultra thick] ([xshift=1.33in,yshift=2.58in]current page.south) circle[radius=0.42in]; % eye
+	\fill[white,draw=black,ultra thick] ([xshift=2.15in,yshift=2.75in]current page.south) circle[radius=0.42in]; % eye
+	\fill[black] ([xshift=1.17in,yshift=2.67in]current page.south) circle[radius=0.08in]; % pupil
+	\fill[black] ([xshift=2.00in,yshift=2.85in]current page.south) circle[radius=0.08in]; % pupil
+	\draw[black,ultra thick] ([xshift=1.67in,yshift=2.04in]current page.south) -- ([xshift=1.83in,yshift=1.75in]current page.south) -- ([xshift=1.92in,yshift=2.12in]current page.south); % nose
+	\draw[black,ultra thick] ([xshift=2in,yshift=1.58in]current page.south) -- ([xshift=2.08in,yshift=1.5in]current page.south); % mouth
+	\draw[black,ultra thick] ([xshift=2.04in,yshift=1.54in]current page.south) .. controls ([xshift=1.92in,yshift=1.33in]current page.south) .. ([xshift=1.75in,yshift=1.42in]current page.south); % mouth
+	\fill[white,draw=black,ultra thick]
+		([xshift=1.08in,yshift=0.00in]current page.south) .. controls % 41
+		([xshift=1.00in,yshift=0.17in]current page.south) and         % 40
+		([xshift=0.96in,yshift=0.58in]current page.south) ..          % 39
+		([xshift=0.96in,yshift=0.75in]current page.south) .. controls % 38
+		([xshift=0.96in,yshift=0.92in]current page.south) and         % 37
+		([xshift=1.08in,yshift=1.25in]current page.south) ..          % 36
+		([xshift=1.00in,yshift=1.42in]current page.south) --          % 35
+		([xshift=0.71in,yshift=2.00in]current page.south) .. controls % 27
+		([xshift=0.58in,yshift=2.21in]current page.south) and         % 26
+		([xshift=0.46in,yshift=2.08in]current page.south) ..          % 25
+		([xshift=0.54in,yshift=1.92in]current page.south) --          % 24
+		([xshift=0.67in,yshift=1.67in]current page.south) .. controls % 19
+		([xshift=0.63in,yshift=1.79in]current page.south) and         % 18
+		([xshift=0.50in,yshift=1.67in]current page.south) ..          % 17
+		([xshift=0.54in,yshift=1.58in]current page.south) .. controls % 16
+		([xshift=0.50in,yshift=1.67in]current page.south) and         % 17
+		([xshift=0.38in,yshift=1.54in]current page.south) ..          % 10
+		([xshift=0.42in,yshift=1.50in]current page.south) .. controls % 11
+		([xshift=0.38in,yshift=1.54in]current page.south) and         % 10
+		([xshift=0.25in,yshift=1.50in]current page.south) ..          % 9
+		([xshift=0.33in,yshift=1.33in]current page.south) --          % 8
+		([xshift=0.50in,yshift=1.08in]current page.south) .. controls % 7
+		([xshift=0.63in,yshift=0.92in]current page.south) and         % 6
+		([xshift=0.71in,yshift=0.75in]current page.south) ..          % 5
+		([xshift=0.67in,yshift=0.63in]current page.south) .. controls % 4
+		([xshift=0.63in,yshift=0.46in]current page.south) and         % 3
+		([xshift=0.67in,yshift=0.17in]current page.south) ..          % 2
+		([xshift=0.75in,yshift=0.00in]current page.south) -- cycle;   % 1
+	\draw[black,ultra thick]
+		([xshift=0.50in,yshift=1.08in]current page.south) .. controls % 7
+		([xshift=0.63in,yshift=0.92in]current page.south) and         % 6
+		([xshift=0.71in,yshift=1.08in]current page.south) ..          % 13
+		([xshift=0.63in,yshift=1.17in]current page.south) --          % 12
+		([xshift=0.42in,yshift=1.50in]current page.south);            % 11
+	\draw[black,ultra thick]
+		([xshift=0.63in,yshift=1.17in]current page.south) .. controls % 12
+		([xshift=0.71in,yshift=1.08in]current page.south) and         % 13
+		([xshift=0.83in,yshift=1.17in]current page.south) ..          % 14
+		([xshift=0.75in,yshift=1.25in]current page.south) --          % 15
+		([xshift=0.54in,yshift=1.58in]current page.south);            % 16
+	\draw[black,ultra thick]
+		([xshift=0.75in,yshift=1.25in]current page.south) .. controls % 15
+		([xshift=0.83in,yshift=1.17in]current page.south) and         % 14
+		([xshift=0.92in,yshift=1.25in]current page.south) ..          % 23
+		([xshift=0.87in,yshift=1.33in]current page.south) --          % 22
+		([xshift=0.67in,yshift=1.67in]current page.south);            % 19
+	\fill[white,draw=black,ultra thick]
+		([xshift=1.00in,yshift=1.42in]current page.south) .. controls % 35
+		([xshift=0.88in,yshift=1.63in]current page.south) ..          % 32
+		([xshift=0.71in,yshift=1.58in]current page.south) .. controls % 20
+		([xshift=0.58in,yshift=1.54in]current page.south) and         % 28
+		([xshift=0.62in,yshift=1.42in]current page.south) ..          % 29
+		([xshift=0.75in,yshift=1.46in]current page.south) .. controls % 21
+		([xshift=0.83in,yshift=1.48in]current page.south) ..          % 33
+		([xshift=0.88in,yshift=1.38in]current page.south);            % 34
+\end{tikzpicture}
+\end{titlingpage}
+
+\thispagestyle{plain}
+\chapter*{Preface}
+\phantomsection
+\addcontentsline{toc}{chapter}{Preface}
+
+[Insert Preface text here.]
+
+\cleardoublepage
+\pagestyle{plain}
+\tableofcontents
+\clearpage
+\listoffigures
+\clearpage
+\listoftables
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Chapter Title
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mainmatter
+\pagestyle{companion}
+\chapter{Chapter Title}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  Section Title
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Section Title}\label{sec:sectionTitle}
+
+\end{document}
