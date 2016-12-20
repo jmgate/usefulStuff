@@ -5,9 +5,7 @@ if [ -f /etc/bashrc ]; then
   . /etc/bashrc
 fi
 
-# User specific aliases and functions
-export LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib:/usr/local/hdf5/lib:${LD_LIBRARY_PATH}
-
+# Load modules.
 module purge
 #module load sems-env
 #module load sems-cmake/3.5.2
@@ -20,27 +18,36 @@ module purge
 #module load sems-tex/2015
 #module load parmetis/4.0.3/gcc/5.1.0/openmpi/1.8.7
 
+# Git configuration.
 source ~/.git-config-jmgate.sh
 source ~/.git-completion.bash
 source ~/.git-prompt.sh
 
+# Proxy settings.
 export http_proxy=http://wwwproxy.sandia.gov:80
 export https_proxy=http://wwwproxy.sandia.gov:80
-#export PS1='[\u@\h \W$(__git_ps1 " (%s)")]\$ '
-#export GIT_PS1_SHOWDIRTYSTATE=1
-#export GIT_PS1_SHOWSTASHSTATE=1
-#export GIT_PS1_SHOWUNTRACKEDFILES=1
-#export GIT_PS1_SHOWUPSTREAM="auto verbose name"
-#export GIT_PS1_DESCRIBE_STYLE="default"
-#export GIT_PS1_SHOWCOLORHINTS=1
-#export GIT_PS1_HIDE_IF_PWD_IGNORED=1
+
+# The following creates a three-line prompt that looks like the following:
+# <blank line>
+# <machine name>: <current working directory> ------------------- <date> <time>
+# [<command #>] <user name>$
 export PS1='\n\[$(printf "%*s" $(($(tput cols)-20)) "" | sed "s/ /-/g") \d \t\r\h: \w \]\n[\#] \u$(__git_ps1 " (%s)")\$ '
+
+# Set the visual editor.
 export VISUAL='vi'
+
+# MY_HOME will be the location on my solid state drive in which I do all my
+# building and running.
 export MY_HOME=/build
-export PATH=~/Downloads/ParaView-5.1.2-Qt4-OpenGL2-MPI-Linux-64bit/bin:~/eclipse/cpp-neon/eclipse:/usr/local/texlive/2016/bin/x86_64-linux:${MY_HOME}/Packages/install/bin:~/bin:~/anaconda3/bin:~/Downloads/cmake-3.6.1-Linux-x86_64/bin:/usr/local/bin:${PATH}
+
+# Set various PATH variables.
+export PATH=~/Downloads/ParaView-5.1.2-Qt4-OpenGL2-MPI-Linux-64bit/bin:~/eclipse/cpp-neon/eclipse:/usr/local/texlive/2016/bin/x86_64-linux:${MY_HOME}/Packages/install/bin:${MY_HOME}/Packages/forked-install/bin:~/bin:~/anaconda3/bin:~/Downloads/cmake-3.6.1-Linux-x86_64/bin:/usr/local/bin:/usr/totalview/bin:${PATH}
+export LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib:/usr/local/hdf5/lib:${LD_LIBRARY_PATH}
 export MANPATH=/usr/local/texlive/2016/texmf-dist/doc/man:${MANPATH}
 export INFOPATH=/usr/local/texlive/2016/texmf-dist/doc/info:${INFOPATH}
-export TRILINOS_DIR=${MY_HOME}/Packages/jmgateTrilinos
+
+# Set Trilinos-related environment variables.
+export TRILINOS_DIR=${MY_HOME}/Packages/Trilinos
 export AMESOS_DIR=${TRILINOS_DIR}/packages/amesos
 export EPETRA_DIR=${TRILINOS_DIR}/packages/epetra
 export KOKKOS_DIR=${TRILINOS_DIR}/packages/kokkos
@@ -48,6 +55,7 @@ export NOX_DIR=${TRILINOS_DIR}/packages/nox
 export PANZER_DIR=${TRILINOS_DIR}/packages/panzer
 export PHALANX_DIR=${TRILINOS_DIR}/packages/phalanx
 export PIRO_DIR=${TRILINOS_DIR}/packages/piro
+export RYTHMOS_DIR=${TRILINOS_DIR}/packages/rythmos
 export SACADO_DIR=${TRILINOS_DIR}/packages/sacado
 export STK_DIR=${TRILINOS_DIR}/packages/stk
 export STRATIMIKOS_DIR=${TRILINOS_DIR}/packages/stratimikos
@@ -65,7 +73,32 @@ export CHARON_OUO_DATA_DIR=${TRILINOS_DIR}/charon-ouo-data
 export DREKAR_BUILD_DIR=${MY_HOME}/Packages/build/mpi-drekar
 export PANZER_BUILD_DIR=${DREKAR_BUILD_DIR}/packages/panzer
 export CHARON_BUILD_DIR=${DREKAR_BUILD_DIR}/tcad-charon
+export FORKED_TRILINOS_DIR=${MY_HOME}/Packages/jmgateTrilinos
+export FORKED_AMESOS_DIR=${FORKED_TRILINOS_DIR}/packages/amesos
+export FORKED_EPETRA_DIR=${FORKED_TRILINOS_DIR}/packages/epetra
+export FORKED_KOKKOS_DIR=${FORKED_TRILINOS_DIR}/packages/kokkos
+export FORKED_NOX_DIR=${FORKED_TRILINOS_DIR}/packages/nox
+export FORKED_PANZER_DIR=${FORKED_TRILINOS_DIR}/packages/panzer
+export FORKED_PHALANX_DIR=${FORKED_TRILINOS_DIR}/packages/phalanx
+export FORKED_PIRO_DIR=${FORKED_TRILINOS_DIR}/packages/piro
+export FORKED_RYTHMOS_DIR=${FORKED_TRILINOS_DIR}/packages/rythmos
+export FORKED_SACADO_DIR=${FORKED_TRILINOS_DIR}/packages/sacado
+export FORKED_STK_DIR=${FORKED_TRILINOS_DIR}/packages/stk
+export FORKED_STRATIMIKOS_DIR=${FORKED_TRILINOS_DIR}/packages/stratimikos
+export FORKED_TEKO_DIR=${FORKED_TRILINOS_DIR}/packages/teko
+export FORKED_TEUCHOS_DIR=${FORKED_TRILINOS_DIR}/packages/teuchos
+export FORKED_THYRA_DIR=${FORKED_TRILINOS_DIR}/packages/thyra
+export FORKED_TPETRA_DIR=${FORKED_TRILINOS_DIR}/packages/tpetra
+export FORKED_DREKAR_BASE_DIR=${FORKED_TRILINOS_DIR}/DrekarBase/drekar
+export FORKED_DREKAR_RESEARCH_DIR=${FORKED_TRILINOS_DIR}/DrekarResearch
+export FORKED_CHARON_DIR=${FORKED_TRILINOS_DIR}/tcad-charon
+export FORKED_CHARON_DATA_DIR=${FORKED_TRILINOS_DIR}/charon-data
+export FORKED_CHARON_OUO_DATA_DIR=${FORKED_TRILINOS_DIR}/charon-ouo-data
+export FORKED_DREKAR_BUILD_DIR=${MY_HOME}/Packages/build/forked-mpi-drekar
+export FORKED_PANZER_BUILD_DIR=${FORKED_DREKAR_BUILD_DIR}/packages/panzer
+export FORKED_CHARON_BUILD_DIR=${FORKED_DREKAR_BUILD_DIR}/tcad-charon
 
+# Generally useful aliases.
 alias .b="source ~/.bashrc"
 alias .bp="source ~/.bash_profile"
 alias grep="grep --color"
@@ -95,6 +128,7 @@ alias nox="cd ${NOX_DIR}"
 alias panzer="cd ${PANZER_DIR}"
 alias phalanx="cd ${PHALANX_DIR}"
 alias piro="cd ${PIRO_DIR}"
+alias rythmos="cd ${RYTHMOS_DIR}"
 alias sacado="cd ${SACADO_DIR}"
 alias stk="cd ${STK_DIR}"
 alias stratimikos="cd ${STRATIMIKOS_DIR}"
@@ -116,3 +150,31 @@ alias discfe="cd ${PANZER_DIR}/disc-fe/src"
 alias dofmgr="cd ${PANZER_DIR}/dof-mgr/src"
 alias adapstk="cd ${PANZER_DIR}/adapters-stk/src"
 alias pcore="cd ${PANZER_DIR}/core/src"
+alias ftrilinos="cd ${FORKED_TRILINOS_DIR}"
+alias famesos="cd ${FORKED_AMESOS_DIR}"
+alias fepetra="cd ${FORKED_EPETRA_DIR}"
+alias fkokkos="cd ${FORKED_KOKKOS_DIR}"
+alias fnox="cd ${FORKED_NOX_DIR}"
+alias fpanzer="cd ${FORKED_PANZER_DIR}"
+alias fphalanx="cd ${FORKED_PHALANX_DIR}"
+alias fpiro="cd ${FORKED_PIRO_DIR}"
+alias frythmos="cd ${FORKED_RYTHMOS_DIR}"
+alias fsacado="cd ${FORKED_SACADO_DIR}"
+alias fstk="cd ${FORKED_STK_DIR}"
+alias fstratimikos="cd ${FORKED_STRATIMIKOS_DIR}"
+alias fteko="cd ${FORKED_TEKO_DIR}"
+alias fteuchos="cd ${FORKED_TEUCHOS_DIR}"
+alias fthyra="cd ${FORKED_THYRA_DIR}"
+alias ftpetra="cd ${FORKED_TPETRA_DIR}"
+alias fdbase="cd ${FORKED_DREKAR_BASE_DIR}"
+alias fdres="cd ${FORKED_DREKAR_RESEARCH_DIR}"
+alias fcharon="cd ${FORKED_CHARON_DIR}"
+alias fcdata="cd ${FORKED_CHARON_DATA_DIR}"
+alias fcodata="cd ${FORKED_CHARON_OUO_DATA_DIR}"
+alias fdbuild="cd ${FORKED_DREKAR_BUILD_DIR}"
+alias fpbuild="cd ${FORKED_PANZER_BUILD_DIR}"
+alias fcbuild="cd ${FORKED_CHARON_BUILD_DIR}"
+alias fdiscfe="cd ${FORKED_PANZER_DIR}/disc-fe/src"
+alias fdofmgr="cd ${FORKED_PANZER_DIR}/dof-mgr/src"
+alias fadapstk="cd ${FORKED_PANZER_DIR}/adapters-stk/src"
+alias fpcore="cd ${FORKED_PANZER_DIR}/core/src"

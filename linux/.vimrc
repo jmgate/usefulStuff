@@ -13,9 +13,27 @@ set shiftwidth=2
 " Match the indentation from the previous line.
 set autoindent
 
-" Automatically word wrap.
+" Word-wrap lines after 79 characters as you type.
 "set textwidth=79
 "autocmd BufNewFile,BufRead * setlocal formatoptions+=t
+
+" Highlight portions of lines that are too long to encourage better
+" line-breaking.  Toggle highlighting on and off with \o.
+highlight Overlength ctermbg=lightred
+let s:overlengthActivated = 0
+function! ToggleOverlengthHighlight()
+  if s:overlengthActivated == 0
+    let s:overlengthActivated = 1
+    match Overlength '\%>79v.\+'
+  else
+    let s:overlengthActivated = 0
+    match none
+  endif
+endfunction
+nnoremap <Leader>o :call ToggleOverlengthHighlight()<CR>
+
+" Jump to the 80th column.
+nnoremap <Leader>j :cal cursor(0, 80)<CR>
 
 " Search as characters are entered.
 set incsearch

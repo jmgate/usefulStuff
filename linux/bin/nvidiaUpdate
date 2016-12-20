@@ -203,6 +203,7 @@ if [ -f $fileName ]; then
   cp $home/.bashrc $home/.bashrc.backup$(date +%m%d%y%H%M%N)
   head -n $(($numRows - 2)) $home/.bashrc > $home/.bashrcNew
   mv $home/.bashrcNew $home/.bashrc
+  chown $(logname):$(logname) $home/.bashrc
 
   # Remove a file such that this script will call beforeReboot() the next time
   # it's run.

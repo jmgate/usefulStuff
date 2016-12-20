@@ -1,0 +1,17 @@
+#!/bin/bash
+banner "Cleaning your install..."
+rm -rfv ${FORKED_DREKAR_BUILD_DIR}/../../forked-install/*
+banner "Cleaning your build..."
+rm -rfv ${FORKED_DREKAR_BUILD_DIR}/*
+banner "Configuring..."
+cd ${FORKED_DREKAR_BUILD_DIR}                                              && \
+  ../fconfigureDrekarInitial | logit fconfig
+banner "Building..."
+cd ${FORKED_DREKAR_BUILD_DIR}                                              && \
+  makeit                                                                   && \
+  banner "Installing..."                                                   && \
+  make install                                                             && \
+  banner "Configuring again..."                                            && \
+  ../fconfigureDrekar | logit fconfig                                      && \
+  banner "Building again..."                                               && \
+  makeit

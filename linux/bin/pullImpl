@@ -2,6 +2,7 @@
 showHelp=false
 all=false
 usual=false
+fork=false
 trilinos=false
 drekarBase=false
 drekarResearch=false
@@ -29,6 +30,7 @@ do
     -h   |--help                  ) showHelp=true              ;;
     -a   |--all                   ) all=true                   ;;
     -u   |--usual                 ) usual=true                 ;;
+    -f   |--fork                  ) fork=true                  ;;
     -t   |--trilinos              ) trilinos=true              ;;
     -db  |--drekar-base           ) drekarBase=true            ;;
     -dr  |--drekar-research       ) drekarResearch=true        ;;
@@ -89,6 +91,8 @@ if $showHelp; then
   echo "┃     -a, --all:    Pull all repositories.                                    ┃"
   echo "┃     -u, --usual:  Pull Trilinos, DrekarBase, DrekarResearch, and            ┃"
   echo "┃                   tcad-charon.                                              ┃"
+  echo "┃     -f, --fork:   Pull from the jmgate/Trilinos fork instead of from        ┃"
+  echo "┃                   trilinos/Trilinos.                                        ┃"
   echo "┃   The options below will pull the corresponding repositories:               ┃"
   echo "┃     -t,    --trilinos                                                       ┃"
   echo "┃     -db,   --drekar-base                                                    ┃"
@@ -135,11 +139,22 @@ pullRepo()
     banner "Skipping $2"
   fi
 }
-pullRepo $trilinos          "Trilinos"          $TRILINOS_DIR
-pullRepo $drekarBase        "DrekarBase"        $DREKAR_BASE_DIR
-pullRepo $drekarResearch    "DrekarResearch"    $DREKAR_RESEARCH_DIR
-pullRepo $drekarSystemTests "DrekarSystemTests" $DREKAR_SYSTEM_TESTS_DIR
-pullRepo $drekarDocuments   "DrekarDocuments"   $DREKAR_DOCS_DIR
-pullRepo $charon            "tcad-charon"       $CHARON_DIR
-pullRepo $charonData        "charon-data"       $CHARON_DATA_DIR
-pullRepo $charonOuoData     "charon-ouo-data"   $CHARON_OUO_DATA_DIR
+if $fork; then
+  pullRepo $trilinos          "Trilinos"          $FORKED_TRILINOS_DIR
+  pullRepo $drekarBase        "DrekarBase"        $FORKED_DREKAR_BASE_DIR
+  pullRepo $drekarResearch    "DrekarResearch"    $FORKED_DREKAR_RESEARCH_DIR
+  pullRepo $drekarSystemTests "DrekarSystemTests" $DREKAR_SYSTEM_TESTS_DIR
+  pullRepo $drekarDocuments   "DrekarDocuments"   $DREKAR_DOCS_DIR
+  pullRepo $charon            "tcad-charon"       $FORKED_CHARON_DIR
+  pullRepo $charonData        "charon-data"       $FORKED_CHARON_DATA_DIR
+  pullRepo $charonOuoData     "charon-ouo-data"   $FORKED_CHARON_OUO_DATA_DIR
+else
+  pullRepo $trilinos          "Trilinos"          $TRILINOS_DIR
+  pullRepo $drekarBase        "DrekarBase"        $DREKAR_BASE_DIR
+  pullRepo $drekarResearch    "DrekarResearch"    $DREKAR_RESEARCH_DIR
+  pullRepo $drekarSystemTests "DrekarSystemTests" $DREKAR_SYSTEM_TESTS_DIR
+  pullRepo $drekarDocuments   "DrekarDocuments"   $DREKAR_DOCS_DIR
+  pullRepo $charon            "tcad-charon"       $CHARON_DIR
+  pullRepo $charonData        "charon-data"       $CHARON_DATA_DIR
+  pullRepo $charonOuoData     "charon-ouo-data"   $CHARON_OUO_DATA_DIR
+fi

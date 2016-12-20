@@ -2,6 +2,7 @@
 showHelp=false
 all=false
 usual=false
+fork=false
 trilinos=false
 drekarBase=false
 drekarResearch=false
@@ -29,6 +30,7 @@ do
     -h   |--help                  ) showHelp=true              ;;
     -a   |--all                   ) all=true                   ;;
     -u   |--usual                 ) usual=true                 ;;
+    -f   |--fork                  ) fork=true                  ;;
     -t   |--trilinos              ) trilinos=true              ;;
     -db  |--drekar-base           ) drekarBase=true            ;;
     -dr  |--drekar-research       ) drekarResearch=true        ;;
@@ -89,6 +91,8 @@ if $showHelp; then
   echo "┃     -a, --all:    Status all repositories.                                  ┃"
   echo "┃     -u, --usual:  Status Trilinos, DrekarBase, DrekarResearch, and          ┃"
   echo "┃                   tcad-charon.                                              ┃"
+  echo "┃     -f, --fork:   Status the jmgate/Trilinos fork instead of                ┃"
+  echo "┃                   trilinos/Trilinos itself.                                 ┃"
   echo "┃   The options below will status the corresponding repositories:             ┃"
   echo "┃     -t,    --trilinos                                                       ┃"
   echo "┃     -db,   --drekar-base                                                    ┃"
@@ -135,11 +139,22 @@ statusRepo()
     banner "Skipping $2"
   fi
 }
-statusRepo $trilinos          "Trilinos"          $TRILINOS_DIR
-statusRepo $drekarBase        "DrekarBase"        $DREKAR_BASE_DIR
-statusRepo $drekarResearch    "DrekarResearch"    $DREKAR_RESEARCH_DIR
-statusRepo $drekarSystemTests "DrekarSystemTests" $DREKAR_SYSTEM_TESTS_DIR
-statusRepo $drekarDocuments   "DrekarDocuments"   $DREKAR_DOCS_DIR
-statusRepo $charon            "tcad-charon"       $CHARON_DIR
-statusRepo $charonData        "charon-data"       $CHARON_DATA_DIR
-statusRepo $charonOuoData     "charon-ouo-data"   $CHARON_OUO_DATA_DIR
+if $fork; then
+  statusRepo $trilinos          "Trilinos"          $FORKED_TRILINOS_DIR
+  statusRepo $drekarBase        "DrekarBase"        $FORKED_DREKAR_BASE_DIR
+  statusRepo $drekarResearch    "DrekarResearch"    $FORKED_DREKAR_RESEARCH_DIR
+  statusRepo $drekarSystemTests "DrekarSystemTests" $DREKAR_SYSTEM_TESTS_DIR
+  statusRepo $drekarDocuments   "DrekarDocuments"   $DREKAR_DOCS_DIR
+  statusRepo $charon            "tcad-charon"       $FORKED_CHARON_DIR
+  statusRepo $charonData        "charon-data"       $FORKED_CHARON_DATA_DIR
+  statusRepo $charonOuoData     "charon-ouo-data"   $FORKED_CHARON_OUO_DATA_DIR
+else
+  statusRepo $trilinos          "Trilinos"          $TRILINOS_DIR
+  statusRepo $drekarBase        "DrekarBase"        $DREKAR_BASE_DIR
+  statusRepo $drekarResearch    "DrekarResearch"    $DREKAR_RESEARCH_DIR
+  statusRepo $drekarSystemTests "DrekarSystemTests" $DREKAR_SYSTEM_TESTS_DIR
+  statusRepo $drekarDocuments   "DrekarDocuments"   $DREKAR_DOCS_DIR
+  statusRepo $charon            "tcad-charon"       $CHARON_DIR
+  statusRepo $charonData        "charon-data"       $CHARON_DATA_DIR
+  statusRepo $charonOuoData     "charon-ouo-data"   $CHARON_OUO_DATA_DIR
+fi

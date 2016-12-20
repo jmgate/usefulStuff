@@ -36,7 +36,3 @@ git config --global alias.dt      'difftool --dir-diff'
 git config --global alias.visual  '!gitk'
 git config --global alias.undo    'reset HEAD~'
 git config --global alias.discard 'checkout --'
-
-# Set up some shortcut commands
-#_SCRIPT_DIR=`echo $0 | sed "s/\(.*\)\/.*\.sh/\1/g"`
-#$_SCRIPT_DIR/../../cmake/tribits/python_utils/git-config-alias.sh

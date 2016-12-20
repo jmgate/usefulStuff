@@ -34,7 +34,7 @@ syn keyword cppStructure	class typename template namespace
 syn keyword cppBoolean		true false
 syn keyword stlType             array deque forward_list list map queue set
 syn keyword stlType             stack unordered_map unordered_set vector string
-syn keyword stlType             tuple pair
+syn keyword stlType             stringstream tuple pair
 
 " C++ 11 extensions
 if !exists("cpp_no_cpp11")
