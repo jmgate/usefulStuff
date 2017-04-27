@@ -12,4 +12,5 @@ git push
 banner "Rebasing panzerGatherScatter on top of develop..."
 git checkout panzerGatherScatter
 git rebase develop
+pull -f -a -nt
 banner "After you've rebuilt and tested everything, you'll want to run 'git push origin +panzerGatherScatter' to push this update to the remote."

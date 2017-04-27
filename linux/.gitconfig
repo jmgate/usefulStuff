@@ -1,0 +1,39 @@
+[user]
+	name = Jason M. Gates
+	email = jmgate@sandia.gov
+[color]
+	ui = true
+[push]
+	default = tracking
+[rerere]
+	enabled = 1
+[diff]
+	tool = kompare
+[difftool]
+	prompt = false
+[core]
+	editor = vim
+[pull]
+	rebase = true
+[alias]
+	co = checkout
+	br = branch
+	ci = commit
+	st = status
+	unstage = reset HEAD --
+	last = log -1 HEAD
+	dt = difftool --dir-diff
+	restore = reset HEAD~1 --mixed
+	discard = checkout --
+	pla = log --decorate --graph --all
+	pl = log --decorate --graph
+	d1 = !git diff $1^ $1
+	dt1 = !git difftool --dir-diff $1^ $1
+	cob = checkout -b
+	cm = !git add -A && git commit
+	save = !git add -A && git commit -m "SAVEPOINT"
+	wip = commit -am "WIP"
+	amend = commit -a --amend
+	wipe = !git add -A && git commit -qm "WIPE SAVEPOINT" && git reset HEAD~1 --hard
+	bclean = "!f() { git branch --merged ${1-develop} | grep -v " ${1-develop}$" | xargs -r git branch -d; }; f"
+	bdone = "!f() { git checkout ${1-develop} && git pull --rebase --prune && git bclean ${1-develop}; }; f"

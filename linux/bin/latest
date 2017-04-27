@@ -1,2 +1,8 @@
 #!/bin/bash
-ls -1t $1* | head -n 1
+if [[ $# -eq 1 ]]; then
+  ls -1t $1* | head -n 1
+elif [[ $# -eq 2 ]]; then
+  for i in $(seq 0 $(($2 - 1))); do
+    ls -1t p$i$1* | head -n 1
+  done
+fi

@@ -1,2 +1,2 @@
 #!/bin/bash
-ctest -j24 --output-on-failure --output-to-root-rank-only=-1 |& logit ctest
+unbuffer ctest -j24 --output-on-failure --output-to-root-rank-only=-1 |& logit ctest

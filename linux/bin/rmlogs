@@ -1,5 +1,16 @@
 #!/bin/bash
-usage="Usage:  rmlogs [fileName [numToSave] ]\n  fileName:   A glob pattern specifying the series of files you'd like to\n              remove.  For instance, if you'd like to remove most of the\n              make*.log files, simply use \"make*.log\" (with the quotes) for\n              the fileName.  The default is to remove the config*.log,\n              make*.log, and ctest*.log files.  If you'd like those three\n              removed, but would like to specify a different number to save\n              (see below), simply use 'all' (with or without quotes) as the\n              fileName.\n  numToSave:  The number of files matching the above pattern that you'd like to\n              keep around.  The most recent numToSave won't be removed.  The\n              default value is 3."
+usage="Usage:  rmlogs [fileName [numToSave] ]\n"
+usage="${usage}  fileName:   A glob pattern specifying the series of files you'd like to\n"
+usage="${usage}              remove.  For instance, if you'd like to remove most of the\n"
+usage="${usage}              make*.log files, simply use \"make*.log\" (with the quotes) for\n"
+usage="${usage}              the fileName.  The default is to remove the config*.log,\n"
+usage="${usage}              make*.log, and ctest*.log files.  If you'd like those three\n"
+usage="${usage}              removed, but would like to specify a different number to save\n"
+usage="${usage}              (see below), simply use 'all' (with or without quotes) as the\n"
+usage="${usage}              fileName.\n"
+usage="${usage}  numToSave:  The number of files matching the above pattern that you'd like to\n"
+usage="${usage}              keep around.  The most recent numToSave won't be removed.  The\n"
+usage="${usage}              default value is 3."
 numToSave=3
 if [[ $# -gt 2 ]]; then
   printf "$usage"

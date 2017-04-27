@@ -1,0 +1,36 @@
+#!/bin/bash
+if [[ (($# -lt 1) || ($# -gt 2)) ]]; then
+  echo "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓"
+  echo "┃ This script will take a file and split out \"p=#\" lines into separate files. ┃"
+  echo "┃ It's intended use is for divvying up log files written with a Teuchos::     ┃"
+  echo "┃ FancyOStream with setShowProcRank(true).                                    ┃"
+  echo "┠─────────────────────────────────────────────────────────────────────────────┨"
+  echo "┃ Usage:  divvy fileName [numProcs]                                           ┃"
+  echo "┃   fileName:  The file that you'd like to split up by processor.             ┃"
+  echo "┃   numProcs:  An integer number of processors.  If omitted, 1 is assumed.    ┃"
+  echo "┃              Note that it is assumed the processors are zero-indexed, so    ┃"
+  echo "┃              numProcs = 2 means we have p=0 and p=1.                        ┃"
+  echo "┃ The output from this script will be a handful of files named p#fileName.    ┃"
+  echo "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛"
+  exit 0
+fi
+file=$1
+if [ ! -f $file ]; then
+  echo "$file does not exist or is not a regular file."
+  exit 1
+fi
+numProcs=1
+if [[ $# -eq 2 ]]; then
+  re='^[0-9]+$'
+  if ! [[ $2 =~ $re ]]; then
+    echo "numProcs = $2 must be an integer."
+    exit 2
+  fi
+  numProcs=$2
+fi
+echo "$file is being divvied up into:"
+for i in $(seq 0 $(($numProcs - 1))); do
+  grep "p=$i" $file > p$i$file
+  echo "p$i$file"
+done
+exit 0

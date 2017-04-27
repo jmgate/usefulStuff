@@ -19,7 +19,6 @@ module purge
 #module load parmetis/4.0.3/gcc/5.1.0/openmpi/1.8.7
 
 # Git configuration.
-source ~/.git-config-jmgate.sh
 source ~/.git-completion.bash
 source ~/.git-prompt.sh
 
@@ -98,16 +97,29 @@ export FORKED_DREKAR_BUILD_DIR=${MY_HOME}/Packages/build/forked-mpi-drekar
 export FORKED_PANZER_BUILD_DIR=${FORKED_DREKAR_BUILD_DIR}/packages/panzer
 export FORKED_CHARON_BUILD_DIR=${FORKED_DREKAR_BUILD_DIR}/tcad-charon
 
+# cd with history.
+function myCd
+{
+  if [ $# -ge 1 ]; then
+    pushd $@ > /dev/null
+  else
+    pushd $HOME > /dev/null;
+  fi
+} # end of function myCd
+
 # Generally useful aliases.
 alias .b="source ~/.bashrc"
 alias .bp="source ~/.bash_profile"
+alias less="less -R"
 alias grep="grep --color"
 alias rgrep="grep -rsIn"
 alias f="find . -name"
 alias o="xdg-open"
 alias rm="rm -v"
+alias cd="myCd"
 alias up="cd .."
-alias back="cd -"
+alias back="popd > /dev/null"
+alias dirs="dirs -v"
 alias cls="clear; ls"
 alias ssh="ssh -Y"
 alias texdocs="cd /usr/local/texlive/2016/texmf-dist/doc"

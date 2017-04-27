@@ -71,4 +71,54 @@ endif
 
 let b:current_syntax = "cpp"
 
+"" Trailing whitespace.
+"syn match PoorStyle display excludenl "\s\+$"
+"" Tabs.
+"syn match PoorStyle display "\t"
+"" No space after comma or semicolon.
+"syn match PoorStyle display ",\S"
+"syn match PoorStyle display ";\S"
+"" Space between consecutive > characters.
+"syn match PoorStyle display ">\s\+>"
+"" Post-increment operator.  (Should generally use pre-increment, unless
+"" post-increment is actually necessary.)
+"syn match PoorStyle display "\a++"
+"" Post-decrement operator.  (Should generally use pre-decrement, unless
+"" post-decrement is actually necessary.)
+"syn match PoorStyle display "\a--"
+
+"" Opening curly brace at the end of a line, unless it's on a line by itself.
+"syn match PoorStyle display "\S\s*{\s*$"
+""" Spaces around an ampersand (though this is legitimate for a bitwise and).
+""syn match PoorStyle display "\s&\s"
+"" Missing space before if/while/for/switch.
+"syn match PoorStyle display "\(if\)\@<=("
+"syn match PoorStyle display "\(for\)\@<=("
+"syn match PoorStyle display "\(while\)\@<=("
+"syn match PoorStyle display "\(switch\)\@<=("
+" Single-character operators without spaces around them.
+"  " + (but not if it's part of ++ or +=)
+"  syn match PoorStyle display "[^ +]+[^+=]"
+"  syn match PoorStyle display "[^+]+[^ +=]"
+"  " - (but not if it's part of --, -=, ->, or if it comes immediately after an
+"  "   opening parenthesis)
+"  syn match PoorStyle display "[^ -]\((\)\@<!-\([>=]\)\@![^-]"
+"  syn match PoorStyle display "[^-]\((\|=\s\+\)\@<!-\([>=]\)\@![^ -]"
+"  syn match PoorStyle display "[a-zA-Z0-9]\*[a-zA-Z0-9]"
+"  syn match PoorStyle display "[^ \/*]\/[^\/=*]"
+"  syn match PoorStyle display "[^\/*]\/[^ \/=*]"
+"  syn match PoorStyle display "[^- =+*/!&|<>]=[^=]"
+"  syn match PoorStyle display "=[^- =+*/&|]"
+"  syn match PoorStyle display "[^ &()]&[^ &=()]"
+"  syn match PoorStyle display "[^ |]|[^|=]"
+"  syn match PoorStyle display "[^|]|[^ |=]"
+"" Double-character operators without spaces around them.
+"  syn match PoorStyle display "\S[-=!<>+*/&|]="
+"  syn match PoorStyle display "[-=!<>+*/&|]=\S"
+"  syn match PoorStyle display "[^ <]<[^=]\(.*>\)\@!"
+"  syn match PoorStyle display "<[^ =<]\(.*>\)\@!"
+"  syn match PoorStyle display "[^- >]>[^=]\(<.*\)\@<!"
+"  syn match PoorStyle display "[^-]>[^ =>]\(<.*\)\@<!"
+"hi def PoorStyle ctermbg=red
+
 " vim: ts=8

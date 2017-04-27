@@ -83,8 +83,8 @@ beforeReboot()
   # Next we'll display the graphics card information, because the user will
   # need it to find the appropriate drivers on Nvidia's website.
   string="Please download the latest Nvidia driver for your particular graphic"
-  string="${string}s cards.  To aid in selecting the right driver, your graphi"
-  string="${string}c card details are below:"
+  string="${string}s card.  To aid in selecting the right driver, your graphic"
+  string="${string} card details are below:"
   banner "$string"
   echo
   letsDoThisThing=true

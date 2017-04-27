@@ -1,0 +1,57 @@
+#!/bin/awk -f
+# This awk script is intended to compress valgrind's output to make it easier
+# to read.
+{
+  narrowWidth = 70
+  line = $0
+
+  # If this is a line of valgrind output...
+  if (($0 ~ /^==[[:digit:]]+==/) || ($0 ~ /^--[[:digit:]]+--/))
+  {
+    # Get the width of the terminal.
+    "tput cols" | getline lineWidth
+
+    # If the line is longer than the terminal is wide...
+    if (length($0) > lineWidth)
+    {
+      # Grab the filename at the end of the line (if it's there).
+      file = ""
+      if ($NF ~ /\(.*\..*:[[:digit:]]+\)$/)
+        file = $NF
+
+      # Abbreviate the line.
+      lengthOfFile = length(file)
+      if (lineWidth > narrowWidth)
+        lengthOfLine = lineWidth - lengthOfFile - 3
+      else
+        lengthOfLine = lineWidth - 3
+      line = substr($0, 1, lengthOfLine) "..."
+
+      # If the terminal is too narrow, insert a newline.
+      if ((lineWidth <= narrowWidth) && (lengthOfFile > 0))
+      {
+        line = line "\n"
+        numSpaces = lineWidth - lengthOfFile
+        for (i = 0; i < numSpaces; ++i)
+          line = line " "
+      }
+
+      # Add the filename and line number in bold to the end of the line.
+      line = line "\033[1m" file "\033[0m"
+    } # end if the line is longer than the terminal is wide
+
+    # If the line is shorter than the terminal is wide, but it still ends in a
+    # filename and line number...
+    else if ($NF ~ /\(.*\..*:[[:digit:]]+\)$/)
+    {
+      # Switch the filename and number at the end of the line to bold.
+      file = $NF
+      lengthOfFile = length(file)
+      lengthOfLine = length($0) - lengthOfFile
+      line = substr($0, 1, lengthOfLine) "\033[1m" file "\033[0m"
+    } # end if the line ends with a filename and line number
+  } # end if this is a line of valgrind output
+
+  # Print the (possibly modified) line.
+  print line
+}

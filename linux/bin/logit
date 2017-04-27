@@ -2,7 +2,7 @@
 fileName=$1$(datetag).log
 tee $fileName                                                             && \
   echo                                                                    && \
-  echo "The output above was saved in $fileName"
+  echo "The output above was saved in $fileName."
 #tee $fileName                                                             && \
 #  echo >> $fileName                                                       && \
 #  echo "The command that generated this log file was:" >> $fileName       && \

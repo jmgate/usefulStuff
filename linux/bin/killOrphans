@@ -1,0 +1,6 @@
+#!/bin/bash
+searchString="/usr/local/bin/mpiexec"
+if [[ $# -eq 1 ]]; then
+  searchString="$1"
+fi
+ps -ef | grep $searchString | awk '{print $2}' | while read p; do kill -9 $p &> /dev/null; done
