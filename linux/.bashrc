@@ -123,12 +123,15 @@ alias dirs="dirs -v"
 alias cls="clear; ls"
 alias ssh="ssh -Y"
 alias texdocs="cd /usr/local/texlive/2016/texmf-dist/doc"
+alias valgrind="valgrind -v --leak-check=full --suppressions=${HOME}/valgrind.supp"
 
 # Machine aliases.
 alias skybridge="ssh jmgate@skybridge.sandia.gov"
 alias hansen="ssh jmgate@hansen.sandia.gov"
 alias shiller="ssh jmgate@shiller.sandia.gov"
 alias estolad="ssh estolad"
+alias mac="ssh jmgate@s1001843.srn.sandia.gov"
+alias linux="ssh jmgate@s1002179.srn.sandia.gov"
 
 # Trilinos aliases.
 alias myhome="cd ${MY_HOME}"
