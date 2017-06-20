@@ -272,6 +272,30 @@ function! InsertFancyOStream()
 endfunction
 nnoremap <Leader>t :call InsertFancyOStream()<CR>
 
+" Insert a template to print out a vector.
+function! InsertPrintVector()
+  normal ^
+  .s/\(.*\)/\r\r\r\r\r\r\r\r\1/
+  normal 8k
+  .s/^.*$/fout << "ETWAS:  urgh = {";/
+  normal j
+  .s/^.*$/for (std::size_t i(0); i < urgh.size(); ++i)/
+  normal j
+  .s/^.*$/{/
+  normal j
+  .s/^.*$/fout << urgh[i];/
+  normal j
+  .s/^.*$/if (i < urgh.size() - 1)/
+  normal j
+  .s/^.*$/fout << ", ";/
+  normal j
+  .s/^.*$/}/
+  normal j
+  .s/^.*$/fout << "} (size = " << urgh.size() << ")" << std::endl;/
+  normal j^
+endfunction
+nnoremap <Leader>v :call InsertPrintVector()<CR>
+
 " Insert string at the beginning of a line.
 function! InsertString(str)
   .s/^/\=(a:str)/

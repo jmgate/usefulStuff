@@ -11,6 +11,9 @@
 	tool = kompare
 [difftool]
 	prompt = false
+[merge]
+  tool = p4merge
+  conflictstyle = diff3
 [core]
 	editor = vim
 [pull]
@@ -18,22 +21,40 @@
 [alias]
 	co = checkout
 	br = branch
+	cob = checkout -b
 	ci = commit
 	st = status
+  rb = rebase
+  mg = merge
+  stage = add
 	unstage = reset HEAD --
-	last = log -1 HEAD
-	dt = difftool --dir-diff
-	restore = reset HEAD~1 --mixed
 	discard = checkout --
-	pla = log --decorate --graph --all
-	pl = log --decorate --graph
-	d1 = !git diff $1^ $1
-	dt1 = !git difftool --dir-diff $1^ $1
-	cob = checkout -b
-	cm = !git add -A && git commit
+  discardall = checkout -- :/
+	ca = !git add -A && git commit
+	cm = !git add -A && git commit -m
 	save = !git add -A && git commit -m "SAVEPOINT"
+	restore = reset HEAD~1 --mixed
 	wip = commit -am "WIP"
 	amend = commit -a --amend
-	wipe = !git add -A && git commit -qm "WIPE SAVEPOINT" && git reset HEAD~1 --hard
+	wipe = "!f() { git add -A && git commit -qm \"WIPE SAVEPOINT\" && git reset HEAD~1 --hard; }; f"
+	pl = log --decorate --graph
+	pl1 = log --decorate --graph --oneline
+	pla = log --decorate --graph --all
+	pla1 = log --decorate --graph --all --oneline
+  last = "!f() { git log --decorate --graph -${1-1} HEAD; }; f"
+	dt = difftool --dir-diff
+  mt = mergetool
+	d1 = !git diff $1^..$1
+	dt1 = !git difftool --dir-diff $1^..$1
+  files = diff-tree --no-commit-id --name-only -r
+  sl = stash list
+  ss = stash save
+  sa = stash apply
+  sp = stash pop
+  sd = stash drop
+  bs = bisect start
+  bg = bisect good
+  bb = bisect bad
+  be = bisect reset bisect/bad
 	bclean = "!f() { git branch --merged ${1-develop} | grep -v " ${1-develop}$" | xargs -r git branch -d; }; f"
 	bdone = "!f() { git checkout ${1-develop} && git pull --rebase --prune && git bclean ${1-develop}; }; f"

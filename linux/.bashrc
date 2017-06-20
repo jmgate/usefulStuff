@@ -35,13 +35,16 @@ export PS1='\n\[$(printf "%*s" $(($(tput cols)-20)) "" | sed "s/ /-/g") \d \t\r\
 # Set the visual editor.
 export VISUAL='vi'
 
+# Set less to use colors and case-insensitive search.
+export LESS=-Ri
+
 # MY_HOME will be the location on my solid state drive in which I do all my
 # building and running.
 export MY_HOME=/build
 
 # Set various PATH variables.
-export PATH=~/Downloads/ParaView-5.1.2-Qt4-OpenGL2-MPI-Linux-64bit/bin:~/eclipse/cpp-neon/eclipse:/usr/local/texlive/2016/bin/x86_64-linux:${MY_HOME}/Packages/install/bin:${MY_HOME}/Packages/forked-install/bin:~/bin:~/anaconda3/bin:~/Downloads/cmake-3.6.1-Linux-x86_64/bin:/usr/local/bin:/usr/totalview/bin:${PATH}
-export LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib:/usr/local/hdf5/lib:${LD_LIBRARY_PATH}
+export PATH=~/Downloads/p4v-2017.1.1491634_x64/bin:~/Downloads/ParaView-5.1.2-Qt4-OpenGL2-MPI-Linux-64bit/bin:~/eclipse/cpp-neon/eclipse:/usr/local/texlive/2016/bin/x86_64-linux:${MY_HOME}/Packages/install/bin:${MY_HOME}/Packages/forked-install/bin:~/bin:~/anaconda3/bin:~/Downloads/cmake-3.6.1-Linux-x86_64/bin:/usr/local/bin:/usr/totalview/bin:~/gitkraken:${PATH}
+export LD_LIBRARY_PATH=/usr/lib64:/usr/local/lib64:/usr/local/lib:/usr/local/hdf5/lib:${LD_LIBRARY_PATH}
 export MANPATH=/usr/local/texlive/2016/texmf-dist/doc/man:${MANPATH}
 export INFOPATH=/usr/local/texlive/2016/texmf-dist/doc/info:${INFOPATH}
 
@@ -107,6 +110,42 @@ function myCd
   fi
 } # end of function myCd
 
+# Move back up the directory stack.
+function myBack
+{
+  num=1
+  if [ $# -ge 1 ]; then
+    re='^[0-9]+$'
+    if ! [[ $1 =~ $re ]]; then
+      echo "Error:  argument = $1 must be an integer."
+      exit 1
+    fi
+    num=$1
+  fi
+  for i in $(seq 1 $num); do
+    popd > /dev/null
+  done
+} # end of function myBack
+
+# Move up one or more directories.
+function myUp
+{
+  num=1
+  if [ $# -ge 1 ]; then
+    re='^[0-9]+$'
+    if ! [[ $1 =~ $re ]]; then
+      echo "Error:  argument = $1 must be an integer."
+      exit 1
+    fi
+    num=$1
+  fi
+  str=".."
+  for i in $(seq 2 $num); do
+    str="${str}/.."
+  done
+  myCd ${str}
+} # end of function myUp
+
 # Generally useful aliases.
 alias .b="source ~/.bashrc"
 alias .bp="source ~/.bash_profile"
@@ -117,13 +156,14 @@ alias f="find . -name"
 alias o="xdg-open"
 alias rm="rm -v"
 alias cd="myCd"
-alias up="cd .."
-alias back="popd > /dev/null"
+alias up="myUp"
+alias back="myBack"
 alias dirs="dirs -v"
 alias cls="clear; ls"
 alias ssh="ssh -Y"
 alias texdocs="cd /usr/local/texlive/2016/texmf-dist/doc"
 alias valgrind="valgrind -v --leak-check=full --suppressions=${HOME}/valgrind.supp"
+alias kraken="gitkraken --proxy-server=${http_proxy}"
 
 # Machine aliases.
 alias skybridge="ssh jmgate@skybridge.sandia.gov"
