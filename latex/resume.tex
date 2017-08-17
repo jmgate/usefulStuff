@@ -1,0 +1,212 @@
+\documentclass[margin,line,pifont,palatino,10pt]{res}
+\usepackage{fancyhdr}
+\usepackage{multicol}
+
+\oddsidemargin -.5in
+\evensidemargin -.5in
+\topmargin -.5in
+\textwidth=6.0in
+\textheight=10.25in
+\itemsep=0in
+\parsep=0in
+
+\pagestyle{fancy}
+\lhead{}
+\chead{}
+\rfoot{Jason M. Gates page \thepage\ of 4}
+\lfoot{}
+\cfoot{}
+\rhead{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\renewcommand\namefont{\huge\bf}
+
+\begin{document}
+\thispagestyle{empty}
+
+\name{Jason M. Gates \vspace*{.05in}}
+
+\begin{resume}
+\section{\sc Contact Information}
+2324 Punta de Vista Pl NE
+\hfill \texttt{\small jason.m.gates@gmail.com}\\
+Albuquerque, NM 87112
+\hfill (832) 683-7362
+
+\vspace{1.5mm}
+\section{\sc Education}
+{\bf Colorado School of Mines}, Golden, Colorado\\
+Ph.D. in Mathematical and Computer Sciences\\
+GPA: 4.0; Qualifying Exams: Passed\\
+{\em Left incomplete due to family responsibilities}\vspace{.1in}\\
+{\bf University of Tulsa}, Tulsa, Oklahoma\\
+M.S. in Applied Mathematics\\
+Graduation: May, 2011; GPA: 3.917\vspace{.1in}\\
+{\bf University of Tulsa}, Tulsa, Oklahoma\\
+B.S. in Engineering Physics with a concentration in Robotics\\
+B.S. in Applied Mathematics\\
+B.A. in German\\
+Graduation: May, 2009; GPA: 3.916
+
+\vspace{1.5mm}
+\section{\sc Clearance}
+TS/SCI based on a SSBI on 5/9/2014, with a favorable CI polygraph on 10/22/2014.\\
+Deactivated after leaving Northrop Grumman Corporation on 6/24/2016.
+
+\vspace{1.5mm}
+\section{\sc Experience}
+{\bf Sandia National Laboratories}, Albuquerque, New Mexico\hfill June, 2016--Present\\
+{\em Member of the Technical Staff:}  Computer Science Research Institute\\
+Software engineering, development, maintenance, testing; version control instruction.
+
+{\bf Northrop Grumman Corporation}, Aurora, Colorado\hfill June, 2014--June, 2016\\
+{\em Engineer Systems II}\\
+Extending software capabilities; developing and testing algorithms; addressing data quality.
+
+{\bf Colorado School of Mines}, Golden, Colorado\hfill August, 2012--May, 2014\\
+{\em Graduate Teaching Fellow}\\
+Advanced Engineering Mathematics and Calculus 3; ``Problem Solving with Matlab'' tutorial series.
+
+{\bf Front Range Community College}, Westminster, Colorado\hfill Summer, 2013\\
+{\em Math Instructor}\\
+College Algebra; online education certified.
+
+{\bf Sandia National Laboratories}, Albuquerque, New Mexico\hfill Summer, 2012\\
+{\em SIP Graduate Professional Technical Summer Intern}\\
+Code validation via manufactured solutions.
+
+{\bf Colorado School of Mines}, Golden, Colorado\hfill August, 2011--May, 2012\\
+{\em Graduate Teaching Assistant}\\
+Recitation sections of Calculus 3.
+
+{\bf University of Tulsa}, Tulsa, Oklahoma\hfill August, 2009--May, 2011\\
+{\em Graduate Teaching Assistant}\\
+Quiz sections of Calculus 1 \& 2.
+
+{\bf University of Tulsa}, Tulsa, Oklahoma\hfill May, 2007--May, 2009\\
+{\em Plasma Physics Research Assistant}\\
+Computationally solved nonlinear magnetohydrodynamic (MHD) equations.
+
+\pagebreak
+\section{\sc Projects}
+{\bf Git Instruction}\\*
+{\it Sandia National Laboratories}\hfill Spring, 2017--Present\\*
+Working with the Center for Computing Research University (CCR-U) group to teach courses introducing participants to version control via git, utilizing the Software Carpentry instruction style.  Previous courses have been very popular and received excellent feedback.  Currently developing an intermediate class to be offered in the fall, building off of the introductory class, and aimed at users with six to twelve months of experience working with git.
+
+{\bf Panzer Memory Usage Refactor}\\*
+{\it Sandia National Laboratories}\hfill September, 2016--July, 2017\\*
+Local to global communication in parallel finite element simulations occurs through the use of \emph{owned} vectors, containing all the information owned by a given process, and \emph{ghosted} vectors, containing the information from neighboring processes.  The original implementation duplicated all the data in the owned vector in the midst of the ghosting process, meaning more data was being stored in memory than was necessary.  Classes were refactored such that ghosted vectors contain only the ghosted information, and any time a user wants to grab an element of a vector given a local ID, the logic of whether it lives in the owned or ghosted vector is hidden from the user.  Avoiding the data duplication significantly reduces the run-time memory usage.
+
+{\bf Generalized Current Constraint Boundary Conditions in Charon}\\*
+{\it Sandia National Laboratories}\hfill October, 2016--June, 2017\\*
+The Charon semiconductor device physics simulation code previously had the ability to attach a constant current constraint to a terminal of a device (diode, transistor, etc.).  This capability was generalized such that any number of constraints can be added to a device (at most one per terminal).  A resistor contact constraint type was added, corresponding to hooking up a resistor with a voltage source on its far side.  A block LDU preconditioner was generalized to work for any of these constraint scenarios.  This capability helps users more readily simulate real-world configurations.
+
+{\bf LOCA and Charon Integration}\\*
+{\it Sandia National Laboratories}\hfill July--September, 2017\\*
+Previously if a Charon user wanted to sweep a voltage contact boundary condition on a device, they would use a rather brute-force Python script to get the job done.  The Library of Continuation Algorithms (LOCA) was integrated with Charon to provide this capability natively, and with more flexibility.  LOCA is able to intelligently ramp up the parameter step size, and, in the case of a solver failure, backtrack, cut the step size, and procede with the continuation run.  This also provides the capability to track bifurcations in the future, should we need to.
+
+{\bf Algorithm Development}\\*
+{\it Northrop Grumman Corporation}\hfill September, 2014--June, 2016\\*
+Given real-time input data from multiple sources, how do we clean and manipulate the data to yield the answer we seek?  Details of the algorithm and its application are classified.  Reviewed relevant literature, determined most information was no longer applicable to our new geometric configuration, and developed an elegant iterative algorithm to walk its way intelligently through the solution space to the correct answer.  Developed a Matlab tool to read in pieces of data from in the midst of the algorithm to generate a multi-page PDF detailing just how the algorithm is working its way to the solution, which aids tremendously in discovering scenarios for which the algorithm needs improvement.
+
+{\bf Automating Large-Scale Distributed Software Installation}\\*
+{\it Northrop Grumman Corporation}\hfill Summer, 2014\\*
+An installation and configuration of HP's Network Node Manager software suite across multiple virtual machines (VMs) took an operator four days using a series of manuals to guide them through the process.  Developed a series of scripts to be deployed and run on the VMs to update various packages in Red Hat Enterprise Linux (RHEL) to the appropriate versions, patch some of HP's Perl scripts used in the installation, and install and configure the software suite.  Automating the process reduced the time needed to about two hours.
+
+\pagebreak
+{\bf Adaptive Local-Global Multiscale Finite Element Methods}\\*
+{\it Colorado School of Mines}\hfill August, 2012--May, 2014\\*
+When solving the classical uniformly elliptic boundary value problem in a medium that is either highly oscillatory or has high contrast the standard Galerkin finite element method (FEM) is insufficient and $h$-, $p$-, and $r$-refinement become prohibitively expensive for large problems.  Multiscale FEMs consist of solving local homogeneous problems on the course mesh elements to create multiscale basis functions that already have some knowledge of the medium.  Determining the appropriate boundary conditions for these local solves is an area of active research.  The adaptive local-global multiscale FEM projects an initial global solve onto extended course mesh elements, makes that projection nodal on the coarse mesh elements, and then averages across the edges of the course mesh.  The resulting local solves yield nodal basis functions with expanded support that satisfy the partition of unity.  In theory there exist ideal basis functions that can reconstruct the exact solution exactly---iterating this method allows us to work toward those ideal basis functions.  This computational effort can be done ahead of time such that the near-ideal basis functions can be used for any source terms and time-evolution scenarios.  Effective parallelism was achieved through the use of OpenMPI and PETSc.
+
+{\bf Automated Generation of Homework Assignments and Solution Procedures}\\*
+{\it Colorado School of Mines}\hfill August, 2013--May, 2014\\*
+Problems in Advanced Engineering Mathematics are highly formulaic---given a problem of a certain type, there are certain steps to follow to the solution.  As such the generation of such problems, \emph{and their full solution procedures}, is simply a matter of programming.  \emph{Mathematica} was utilized to randomly generate problem sets and solutions for the class.
+
+{\bf Manufacturing Solutions to Fluid Flow Problems}\\*
+{\it Sandia National Laboratories}\hfill Summer, 2012\\*
+Assuming solutions of a certain form and working them through systems of nonlinear coupled partial differential equations (PDEs) allows one to determine the source terms necessary for the equations to be satisfied.  Developed a \emph{Mathematica} suite for manufacturing such solutions to incompressible Navier Stokes, some of its turbulent extensions, and to MHD.  Solutions and source terms were exportable to C for interfacing with a code being validated, and all details were exportable to \LaTeX\ for paper generation.
+
+{\bf Boundary Integral Equation Methods for Solutions to Laplace's Equation}\\*
+{\it University of Tulsa}\hfill Fall, 2010\\*
+This general solution method consists of transferring all the computation from the domain to its boundary.  Both inner and outer Dirichlet, Neumann, and Robin problems were considered.  Solvability was proven, and uniqueness was shown for all but the inner Neumann problem, whose solutions differ only by a constant.  Solutions were determined in terms of harmonic potentials from Green's representation formulas.
+
+{\bf Boundary Element Method and Visualization Tool}\\*
+{\it University of Tulsa}\hfill Fall, 2010\\*
+The numerical equivalent to the project above, when attempting to solve a PDE on a given domain, one can instead subdivide the boundary into a number of boundary elements and do all the necessary integration there.  Determining the solution somewhere in the domain is then just a matter of evaluating a function at that point.  Developed an interactive \emph{Mathematica} suite for solving various PDEs.  Users have the ability to specify boundary, various PDE and boundary condition terms, where to evaluate solution, etc.
+
+{\bf Nonlinear Evolution of Unstable MHD Equilibria}\\*
+{\it University of Tulsa}\hfill May, 2007--May, 2009\\*
+Created a user interface between an eigenvalue code, an equilibrium code (SCOTS), and a nonlinear MHD evolution code (NIMROD) allowing for an exploration of parameter space to determine where modes were stable or resistive- or ideal-unstable.  Then ran nonlinearly from a starting point near the stability boundary and observed how the plasma evolved.
+
+\pagebreak
+\section{\sc Presentations \&\\Publications}
+\newcounter{cnt}
+\setcounter{cnt}{1}
+\begin{list}{[\arabic{cnt}] }{\usecounter{cnt}\leftmargin=0.255in}
+\item
+Jason Matthew Gates, Roger P. Pawlowski, and Eric Christopher Cyr.  ``Panzer:  A Finite Element Assembly Engine within the Trilinos Framework.''  {\em Presentation.}  SIAM CSE 2017.  March 2017.
+\item
+D P Brennan, P K Browning, J Gates, and R A M Van der Linden. ``Helicity-injected current drive and open flux instabilities in spherical tokamaks.''  {\em Plasma Physics and Controlled Fusion} 51.4 (2009):045004.
+\end{list}
+
+\vspace{1.5mm}
+\section{\sc Honors \& Awards}
+\vspace{0ex}
+\begin{multicols}{2}
+\raggedright
+\begin{list}{$\diamond$}{\usecounter{cnt}\leftmargin=0.15in}
+\item Employee Recognition Award for Git Training
+\item Department of Applied Mathematics and Statistics Graduate Student Teaching Award
+\item Graduate Teaching Fellowship \& Assistantships
+\item Outstanding Senior in German
+\item Academic Excellence Award
+\item Member of $\Phi$BK, $\Phi\Sigma$I, TB$\Pi$, $\Sigma\Pi\Sigma$
+\item University of Tulsa Presidential Scholarship
+\item Byrd Scholarship
+\item Oklahoma Academic All-State Scholarship
+\item ACT Perfect Score
+\end{list}
+\end{multicols}
+
+\vspace{1.5mm}
+\section{\sc Skills}
+
+{\bf Programming:}
+\begin{list}{$\diamond$}{\usecounter{cnt}\leftmargin=0.15in}
+	\item C++:  Extensive experience developing and maintaining large object-oriented codes.  Experience creating and utilizing templated classes, including template metaprogramming.  Proficient with the Standard Template Library and RogueWave containers.  Some experience with Boost libraries.  Current language of choice.
+  \item Trilinos:  Panzer, Teuchos, Thyra, Phalanx, E/Tpetra, NOX, LOCA, Piro, Teko.
+	\item Fortran:  Experience developing and utilizing large, parallel, object-oriented codes.  Experience with Fortran 77/95/2003.
+	\item OpenMPI:  Experience parallelizing Fortran FEM codes.
+	\item Python:  Experience writing test suites to validate results.  Some experience with the SciPy stack.
+	\item Perl:  Some experience patching installation scripts.
+  \item Julia:  Basic experience.
+	\item Java:  Basic experience.
+	\item OpenMP:  Some experience parallelizing Fortran FEM codes.  Prefer OpenMPI.
+\end{list}
+{\bf Linux/Unix:}
+\begin{list}{$\diamond$}{\usecounter{cnt}\leftmargin=0.15in}
+	\item RHEL/CentOS/Fedora:  Experience installing and configuring.  Some experience with other system administrator tasks.
+	\item bash/tcsh:  Extensive scripting experience.
+	\item sed/awk/grep:  Extensive experience searching for, modifying, summarizing textual information.
+\end{list}
+{\bf Mathematical Tools:}
+\begin{list}{$\diamond$}{\usecounter{cnt}\leftmargin=0.15in}
+	\item \LaTeX:  Extensive experience typesetting a variety of works.
+	\item \emph{Mathematica}:  Certified by Wolfram Research.  Extensive experience with symbolic manipulations, visualizations, creating dynamic user interfaces to codes, etc.  Preferred mathematical working environment.
+	\item Matlab:  Extensive experience implementing numerical methods and visualizing results.  Developed ``Problem Solving with Matlab'' tutorial series.  Some experience with computer vision packages.
+	\item PETSc/LAPACK:  Experience implementing parallel FEM codes.
+\end{list}
+{\bf Other:}
+\begin{list}{$\diamond$}{\usecounter{cnt}\leftmargin=0.15in}
+	\item German:  Fluent in conversational and some technical.
+	\item SketchUp:  Extensive experience utilizing for woodworking and carpentry design.
+	\item Blackboard/Desire2Learn/MyMathLab:  Experience managing courses; online education certified.
+\end{list}
+
+\vspace{1.5mm}
+\section{\sc References}
+References available upon request.
+
+\end{resume}
+\end{document}
