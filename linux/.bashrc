@@ -26,11 +26,28 @@ source ~/.git-prompt.sh
 export http_proxy=http://wwwproxy.sandia.gov:80
 export https_proxy=http://wwwproxy.sandia.gov:80
 
-# The following creates a three-line prompt that looks like the following:
-# <blank line>
-# <machine name>: <current working directory> ------------------- <date> <time>
-# [<command #>] <user name>$
-export PS1='\n\[$(printf "%*s" $(($(tput cols)-20)) "" | sed "s/ /-/g") \d \t\r\h: \w \]\n[\#] \u$(__git_ps1 " (%s)")\$ '
+# The following creates a three- or four-line prompt that looks like the
+# following:
+#   <blank line>
+#   <machine name>: <current working directory> ----------------- <date> <time>
+#   [<command #>] <user name> (<git branch name>)$
+# or, if <git branch name> is too long,
+#   <blank line>
+#   <machine name>: <current working directory> ----------------- <date> <time>
+#   (<git branch name>)
+#   [<command #>] <user name>$
+function promptCommand
+{
+  branchName=$(__git_ps1)
+  tooLong=$(($(tput cols) / 3))
+  PS1='\n\[$(printf "%*s" $(($(tput cols) - 20)) "" | sed "s/ /─/g") \d \t\r\h: \w \]\n'
+  if [ ${#branchName} -gt $tooLong ]; then
+    export PS1=$PS1'$(__git_ps1 "(%s)")\n[\#] \u\$ '
+  else
+    export PS1=$PS1'[\#] \u$(__git_ps1)\$ '
+  fi
+}
+PROMPT_COMMAND=promptCommand
 
 # Set the visual editor.
 export VISUAL='vi'
@@ -43,7 +60,9 @@ export LESS=-Ri
 export MY_HOME=/build
 
 # Set various PATH variables.
-export PATH=~/Downloads/p4v-2017.1.1491634_x64/bin:~/Downloads/ParaView-5.1.2-Qt4-OpenGL2-MPI-Linux-64bit/bin:~/eclipse/cpp-neon/eclipse:/usr/local/texlive/2016/bin/x86_64-linux:${MY_HOME}/Packages/install/bin:${MY_HOME}/Packages/forked-install/bin:~/bin:~/anaconda3/bin:~/Downloads/cmake-3.6.1-Linux-x86_64/bin:/usr/local/bin:/usr/totalview/bin:~/gitkraken:${PATH}
+export TRIBITS_BASE_DIR=~/TriBITS
+export GITDIST_MOVE_TO_BASE_DIR=EXTREME_BASE
+export PATH=${TRIBITS_BASE_DIR}/tribits/python_utils:${TRIBITS_BASE_DIR}/tribits/ci_support:~/Downloads/p4v-2017.1.1491634_x64/bin:~/Downloads/ParaView-5.1.2-Qt4-OpenGL2-MPI-Linux-64bit/bin:~/eclipse/cpp-neon/eclipse:/usr/local/texlive/2016/bin/x86_64-linux:${MY_HOME}/Packages/install/bin:${MY_HOME}/Packages/forked-install/bin:~/bin:~/anaconda3/bin:~/Downloads/cmake-3.6.1-Linux-x86_64/bin:/usr/local/bin:/usr/totalview/bin:~/gitkraken:${PATH}
 export LD_LIBRARY_PATH=/usr/lib64:/usr/local/lib64:/usr/local/lib:/usr/local/hdf5/lib:${LD_LIBRARY_PATH}
 export MANPATH=/usr/local/texlive/2016/texmf-dist/doc/man:${MANPATH}
 export INFOPATH=/usr/local/texlive/2016/texmf-dist/doc/info:${INFOPATH}
@@ -65,8 +84,7 @@ export TEKO_DIR=${TRILINOS_DIR}/packages/teko
 export TEUCHOS_DIR=${TRILINOS_DIR}/packages/teuchos
 export THYRA_DIR=${TRILINOS_DIR}/packages/thyra
 export TPETRA_DIR=${TRILINOS_DIR}/packages/tpetra
-export DREKAR_BASE_DIR=${TRILINOS_DIR}/DrekarBase/drekar
-export DREKAR_RESEARCH_DIR=${TRILINOS_DIR}/DrekarResearch
+export DREKAR_BASE_DIR=${TRILINOS_DIR}/DrekarBase
 export DREKAR_SYSTEM_TESTS_DIR=${MY_HOME}/Packages/DrekarSystemTests
 export DREKAR_DOCS_DIR=${MY_HOME}/Packages/DrekarDocuments/trunk
 export CHARON_DIR=${TRILINOS_DIR}/tcad-charon
@@ -91,8 +109,7 @@ export FORKED_TEKO_DIR=${FORKED_TRILINOS_DIR}/packages/teko
 export FORKED_TEUCHOS_DIR=${FORKED_TRILINOS_DIR}/packages/teuchos
 export FORKED_THYRA_DIR=${FORKED_TRILINOS_DIR}/packages/thyra
 export FORKED_TPETRA_DIR=${FORKED_TRILINOS_DIR}/packages/tpetra
-export FORKED_DREKAR_BASE_DIR=${FORKED_TRILINOS_DIR}/DrekarBase/drekar
-export FORKED_DREKAR_RESEARCH_DIR=${FORKED_TRILINOS_DIR}/DrekarResearch
+export FORKED_DREKAR_BASE_DIR=${FORKED_TRILINOS_DIR}/DrekarBase
 export FORKED_CHARON_DIR=${FORKED_TRILINOS_DIR}/tcad-charon
 export FORKED_CHARON_DATA_DIR=${FORKED_TRILINOS_DIR}/charon-data
 export FORKED_CHARON_OUO_DATA_DIR=${FORKED_TRILINOS_DIR}/charon-ouo-data
@@ -146,6 +163,25 @@ function myUp
   myCd ${str}
 } # end of function myUp
 
+# Git branch with descriptions.
+function gitBranchDescriptions
+{
+  branches=$(git for-each-ref --format='%(refname)' refs/heads/ | sed 's|refs/heads/||')
+  for branch in $branches; do
+    desc=$(git config branch.$branch.description)
+    if [ $branch == $(git rev-parse --abbrev-ref HEAD) ]; then
+      branch="* \033[0;32m$branch\033[0m"
+    else
+      branch="  $branch"
+    fi
+    echo -e "$branch \033[0;36m"
+    while read -r line; do
+      echo "    $line"
+    done <<< "$desc"
+    echo -e "\033[0m"
+  done
+}
+
 # Generally useful aliases.
 alias .b="source ~/.bashrc"
 alias .bp="source ~/.bash_profile"
@@ -160,6 +196,7 @@ alias up="myUp"
 alias back="myBack"
 alias dirs="dirs -v"
 alias cls="clear; ls"
+alias tree="tree -C --charset UTF8"
 alias ssh="ssh -Y"
 alias texdocs="cd /usr/local/texlive/2016/texmf-dist/doc"
 alias valgrind="valgrind -v --leak-check=full --suppressions=${HOME}/valgrind.supp"
@@ -169,7 +206,7 @@ alias kraken="gitkraken --proxy-server=${http_proxy}"
 alias skybridge="ssh jmgate@skybridge.sandia.gov"
 alias hansen="ssh jmgate@hansen.sandia.gov"
 alias shiller="ssh jmgate@shiller.sandia.gov"
-alias estolad="ssh estolad"
+alias estolad="ssh jmgate@estolad.sandia.gov"
 alias mac="ssh jmgate@s1001843.srn.sandia.gov"
 alias linux="ssh jmgate@s1002179.srn.sandia.gov"
 
@@ -192,7 +229,6 @@ alias teuchos="cd ${TEUCHOS_DIR}"
 alias thyra="cd ${THYRA_DIR}"
 alias tpetra="cd ${TPETRA_DIR}"
 alias dbase="cd ${DREKAR_BASE_DIR}"
-alias dres="cd ${DREKAR_RESEARCH_DIR}"
 alias dstests="cd ${DREKAR_SYSTEM_TESTS_DIR}"
 alias ddocs="cd ${DREKAR_DOCS_DIR}"
 alias charon="cd ${CHARON_DIR}"
@@ -222,7 +258,6 @@ alias fteuchos="cd ${FORKED_TEUCHOS_DIR}"
 alias fthyra="cd ${FORKED_THYRA_DIR}"
 alias ftpetra="cd ${FORKED_TPETRA_DIR}"
 alias fdbase="cd ${FORKED_DREKAR_BASE_DIR}"
-alias fdres="cd ${FORKED_DREKAR_RESEARCH_DIR}"
 alias fcharon="cd ${FORKED_CHARON_DIR}"
 alias fcdata="cd ${FORKED_CHARON_DATA_DIR}"
 alias fcodata="cd ${FORKED_CHARON_OUO_DATA_DIR}"

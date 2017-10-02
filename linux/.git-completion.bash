@@ -47,7 +47,7 @@ __gitdir ()
 		elif [ -d .git ]; then
 			echo .git
 		else
-			git rev-parse --git-dir 2>/dev/null
+			/usr/local/bin/git rev-parse --git-dir 2>/dev/null
 		fi
 	elif [ -d "$1/.git" ]; then
 		echo "$1/.git"
@@ -283,10 +283,10 @@ __gitcomp_file ()
 __git_ls_files_helper ()
 {
 	if [ "$2" == "--committable" ]; then
-		git -C "$1" diff-index --name-only --relative HEAD
+		/usr/local/bin/git -C "$1" diff-index --name-only --relative HEAD
 	else
 		# NOTE: $2 is not quoted in order to support multiple options
-		git -C "$1" ls-files --exclude-standard $2
+		/usr/local/bin/git -C "$1" ls-files --exclude-standard $2
 	fi 2>/dev/null
 }
 
@@ -316,7 +316,7 @@ __git_heads ()
 {
 	local dir="$(__gitdir)"
 	if [ -d "$dir" ]; then
-		git --git-dir="$dir" for-each-ref --format='%(refname:short)' \
+		/usr/local/bin/git --git-dir="$dir" for-each-ref --format='%(refname:short)' \
 			refs/heads
 		return
 	fi
@@ -326,7 +326,7 @@ __git_tags ()
 {
 	local dir="$(__gitdir)"
 	if [ -d "$dir" ]; then
-		git --git-dir="$dir" for-each-ref --format='%(refname:short)' \
+		/usr/local/bin/git --git-dir="$dir" for-each-ref --format='%(refname:short)' \
 			refs/tags
 		return
 	fi
@@ -354,14 +354,14 @@ __git_refs ()
 			refs="refs/tags refs/heads refs/remotes"
 			;;
 		esac
-		git --git-dir="$dir" for-each-ref --format="%($format)" \
+		/usr/local/bin/git --git-dir="$dir" for-each-ref --format="%($format)" \
 			$refs
 		if [ -n "$track" ]; then
 			# employ the heuristic used by git checkout
 			# Try to find a remote branch that matches the completion word
 			# but only output if the branch name is unique
 			local ref entry
-			git --git-dir="$dir" for-each-ref --shell --format="ref=%(refname:short)" \
+			/usr/local/bin/git --git-dir="$dir" for-each-ref --shell --format="ref=%(refname:short)" \
 				"refs/remotes/" | \
 			while read -r entry; do
 				eval "$entry"
@@ -375,7 +375,7 @@ __git_refs ()
 	fi
 	case "$cur" in
 	refs|refs/*)
-		git ls-remote "$dir" "$cur*" 2>/dev/null | \
+		/usr/local/bin/git ls-remote "$dir" "$cur*" 2>/dev/null | \
 		while read -r hash i; do
 			case "$i" in
 			*^{}) ;;
@@ -385,7 +385,7 @@ __git_refs ()
 		;;
 	*)
 		echo "HEAD"
-		git for-each-ref --format="%(refname:short)" -- \
+		/usr/local/bin/git for-each-ref --format="%(refname:short)" -- \
 			"refs/remotes/$dir/" 2>/dev/null | sed -e "s#^$dir/##"
 		;;
 	esac
@@ -404,7 +404,7 @@ __git_refs2 ()
 __git_refs_remotes ()
 {
 	local i hash
-	git ls-remote "$1" 'refs/heads/*' 2>/dev/null | \
+	/usr/local/bin/git ls-remote "$1" 'refs/heads/*' 2>/dev/null | \
 	while read -r hash i; do
 		echo "$i:refs/remotes/$1/${i#refs/heads/}"
 	done
@@ -414,12 +414,12 @@ __git_remotes ()
 {
 	local d="$(__gitdir)"
 	test -d "$d/remotes" && ls -1 "$d/remotes"
-	git --git-dir="$d" remote
+	/usr/local/bin/git --git-dir="$d" remote
 }
 
 __git_list_merge_strategies ()
 {
-	git merge -s help 2>&1 |
+	/usr/local/bin/git merge -s help 2>&1 |
 	sed -n -e '/[Aa]vailable strategies are: /,/^$/{
 		s/\.$//
 		s/.*://
@@ -468,7 +468,7 @@ __git_complete_revlist_file ()
 		*)   pfx="$ref:$pfx" ;;
 		esac
 
-		__gitcomp_nl "$(git --git-dir="$(__gitdir)" ls-tree "$ls" 2>/dev/null \
+		__gitcomp_nl "$(/usr/local/bin/git --git-dir="$(__gitdir)" ls-tree "$ls" 2>/dev/null \
 				| sed '/^100... blob /{
 				           s,^.*	,,
 				           s,$, ,
@@ -624,7 +624,7 @@ __git_commands () {
 	then
 		printf "%s" "${GIT_TESTING_COMMAND_COMPLETION}"
 	else
-		git help -a|egrep '^  [a-zA-Z0-9]'
+		/usr/local/bin/git help -a|egrep '^  [a-zA-Z0-9]'
 	fi
 }
 
@@ -746,7 +746,7 @@ __git_compute_porcelain_commands ()
 __git_get_config_variables ()
 {
 	local section="$1" i IFS=$'\n'
-	for i in $(git --git-dir="$(__gitdir)" config --name-only --get-regexp "^$section\..*" 2>/dev/null); do
+	for i in $(/usr/local/bin/git --git-dir="$(__gitdir)" config --name-only --get-regexp "^$section\..*" 2>/dev/null); do
 		echo "${i#$section.}"
 	done
 }
@@ -764,7 +764,7 @@ __git_aliases ()
 # __git_aliased_command requires 1 argument
 __git_aliased_command ()
 {
-	local word cmdline=$(git --git-dir="$(__gitdir)" \
+	local word cmdline=$(/usr/local/bin/git --git-dir="$(__gitdir)" \
 		config --get "alias.$1")
 	for word in $cmdline; do
 		case "$word" in
@@ -841,7 +841,7 @@ __git_get_option_value ()
 	done
 
 	if [ -n "$config_key" ] && [ -z "$result" ]; then
-		result="$(git --git-dir="$(__gitdir)" config "$config_key")"
+		result="$(/usr/local/bin/git --git-dir="$(__gitdir)" config "$config_key")"
 	fi
 
 	echo "$result"
@@ -959,7 +959,7 @@ _git_archive ()
 {
 	case "$cur" in
 	--format=*)
-		__gitcomp "$(git archive --list)" "" "${cur##--format=}"
+		__gitcomp "$(/usr/local/bin/git archive --list)" "" "${cur##--format=}"
 		return
 		;;
 	--remote=*)
@@ -1181,7 +1181,7 @@ _git_commit ()
 		return
 	esac
 
-	if git rev-parse --verify --quiet HEAD >/dev/null; then
+	if /usr/local/bin/git rev-parse --verify --quiet HEAD >/dev/null; then
 		__git_complete_index_file "--committable"
 	else
 		# This is the first commit
@@ -1474,7 +1474,7 @@ _git_log ()
 {
 	__git_has_doubledash && return
 
-	local g="$(git rev-parse --git-dir 2>/dev/null)"
+	local g="$(/usr/local/bin/git rev-parse --git-dir 2>/dev/null)"
 	local merge=""
 	if [ -f "$g/MERGE_HEAD" ]; then
 		merge="--merge"
@@ -1768,7 +1768,7 @@ _git_send_email ()
 	case "$prev" in
 	--to|--cc|--bcc|--from)
 		__gitcomp "
-		$(git --git-dir="$(__gitdir)" send-email --dump-aliases 2>/dev/null)
+		$(/usr/local/bin/git --git-dir="$(__gitdir)" send-email --dump-aliases 2>/dev/null)
 		"
 		return
 		;;
@@ -1800,7 +1800,7 @@ _git_send_email ()
 		;;
 	--to=*|--cc=*|--bcc=*|--from=*)
 		__gitcomp "
-		$(git --git-dir="$(__gitdir)" send-email --dump-aliases 2>/dev/null)
+		$(/usr/local/bin/git --git-dir="$(__gitdir)" send-email --dump-aliases 2>/dev/null)
 		" "" "${cur#--*=}"
 		return
 		;;
@@ -1895,7 +1895,7 @@ __git_config_get_set_variables ()
 		c=$((--c))
 	done
 
-	git --git-dir="$(__gitdir)" config $config_file --name-only --list 2>/dev/null
+	/usr/local/bin/git --git-dir="$(__gitdir)" config $config_file --name-only --list 2>/dev/null
 }
 
 _git_config ()
@@ -1930,7 +1930,7 @@ _git_config ()
 	remote.*.push)
 		local remote="${prev#remote.}"
 		remote="${remote%.push}"
-		__gitcomp_nl "$(git --git-dir="$(__gitdir)" \
+		__gitcomp_nl "$(/usr/local/bin/git --git-dir="$(__gitdir)" \
 			for-each-ref --format='%(refname):%(refname)' \
 			refs/heads)"
 		return
@@ -2515,12 +2515,12 @@ _git_stash ()
 			if [ $cword -eq 3 ]; then
 				__gitcomp_nl "$(__git_refs)";
 			else
-				__gitcomp_nl "$(git --git-dir="$(__gitdir)" stash list \
+				__gitcomp_nl "$(/usr/local/bin/git --git-dir="$(__gitdir)" stash list \
 						| sed -n -e 's/:.*//p')"
 			fi
 			;;
 		show,*|apply,*|drop,*|pop,*)
-			__gitcomp_nl "$(git --git-dir="$(__gitdir)" stash list \
+			__gitcomp_nl "$(/usr/local/bin/git --git-dir="$(__gitdir)" stash list \
 					| sed -n -e 's/:.*//p')"
 			;;
 		*)
@@ -2827,7 +2827,7 @@ if [[ -n ${ZSH_VERSION-} ]]; then
 		return _ret
 	}
 
-	compdef _git git gitk
+	compdef _git /usr/local/bin/git gitk
 	return
 fi
 
@@ -2861,7 +2861,7 @@ _gitk ()
 	__git_wrap__gitk_main
 }
 
-__git_complete git __git_main
+__git_complete /usr/local/bin/git __git_main
 __git_complete gitk __gitk_main
 
 # The following are necessary only for Cygwin, and only are needed

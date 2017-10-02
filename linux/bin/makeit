@@ -1,2 +1,2 @@
 #!/bin/bash
-unbuffer make -j20 |& logit make
+unbuffer make -j48 |& logit make

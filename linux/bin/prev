@@ -1,0 +1,11 @@
+#!/bin/bash
+back=1
+if [[ $# -eq 2 ]]; then
+  re='^[0-9]+$'
+  if ! [[ $2 =~ $re ]]; then
+    echo "back = $2 must be an integer."
+    exit 1
+  fi
+  back=$2
+fi
+ls -1t $1* | head -n $(($back + 1)) | tail -n 1

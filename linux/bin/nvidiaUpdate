@@ -168,8 +168,9 @@ afterReboot()
   # Now we can finally run the driver installation script.
   banner "Running the Nvidia driver installation script."
   chmod +x $(ls -t $downloads/NVIDIA* | head -n 1)
-  $(ls -t $downloads/NVIDIA* | head -n 1) --accept-license --no-questions \
-    --force-update
+#  $(ls -t $downloads/NVIDIA* | head -n 1) --accept-license --no-questions \
+#    --force-update
+  $(ls -t $downloads/NVIDIA* | head -n 1)
 
   # Next we'll back up the old initramfs and create a new one.
   banner "Backing up the old initramfs."

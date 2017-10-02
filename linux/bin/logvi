@@ -1,0 +1,13 @@
+#!/bin/bash
+echo "This script doesn't work yet."
+exit 1
+fileName=$1
+shift
+re='^[0-9]+$'
+if ! [[ $1 =~ $re ]]; then
+  $@ |& logit $fileName && vi $(latest $fileName)
+else
+  numProcs=$1
+  shift
+  $@ |& logit $fileName && divvy $(latest $fileName) $numProcs && vi $(latest $fileName $numProcs)
+fi

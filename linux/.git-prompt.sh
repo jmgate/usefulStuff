@@ -108,7 +108,7 @@ __git_ps1_show_upstream ()
 
 	svn_remote=()
 	# get some config options from git-config
-	local output="$(git config -z --get-regexp '^(svn-remote\..*\.url|bash\.showupstream)$' 2>/dev/null | tr '\0\n' '\n ')"
+	local output="$(/usr/local/bin/git config -z --get-regexp '^(svn-remote\..*\.url|bash\.showupstream)$' 2>/dev/null | tr '\0\n' '\n ')"
 	while read -r key value; do
 		case "$key" in
 		bash.showupstream)
@@ -143,7 +143,7 @@ __git_ps1_show_upstream ()
 		# get the upstream from the "git-svn-id: ..." in a commit message
 		# (git-svn uses essentially the same procedure internally)
 		local -a svn_upstream
-		svn_upstream=($(git log --first-parent -1 \
+		svn_upstream=($(/usr/local/bin/git log --first-parent -1 \
 					--grep="^git-svn-id: \(${svn_url_pattern#??}\)" 2>/dev/null))
 		if [[ 0 -ne ${#svn_upstream[@]} ]]; then
 			svn_upstream=${svn_upstream[${#svn_upstream[@]} - 2]}
@@ -167,12 +167,12 @@ __git_ps1_show_upstream ()
 
 	# Find how many commits we are ahead/behind our upstream
 	if [[ -z "$legacy" ]]; then
-		count="$(git rev-list --count --left-right \
+		count="$(/usr/local/bin/git rev-list --count --left-right \
 				"$upstream"...HEAD 2>/dev/null)"
 	else
 		# produce equivalent output to --count for older versions of git
 		local commits
-		if commits="$(git rev-list --left-right "$upstream"...HEAD 2>/dev/null)"
+		if commits="$(/usr/local/bin/git rev-list --left-right "$upstream"...HEAD 2>/dev/null)"
 		then
 			local commit behind=0 ahead=0
 			for commit in $commits
@@ -216,7 +216,7 @@ __git_ps1_show_upstream ()
 			p=" u+${count#*	}-${count%	*}" ;;
 		esac
 		if [[ -n "$count" && -n "$name" ]]; then
-			__git_ps1_upstream_name=$(git rev-parse \
+			__git_ps1_upstream_name=$(/usr/local/bin/git rev-parse \
 				--abbrev-ref "$upstream" 2>/dev/null)
 			if [ $pcmode = yes ] && [ $ps1_expanded = yes ]; then
 				p="$p \${__git_ps1_upstream_name}"
@@ -359,7 +359,7 @@ __git_ps1 ()
 	[ -z "${BASH_VERSION-}" ] || shopt -q promptvars || ps1_expanded=no
 
 	local repo_info rev_parse_exit_code
-	repo_info="$(git rev-parse --git-dir --is-inside-git-dir \
+	repo_info="$(/usr/local/bin/git rev-parse --git-dir --is-inside-git-dir \
 		--is-bare-repository --is-inside-work-tree \
 		--short HEAD 2>/dev/null)"
 	rev_parse_exit_code="$?"
@@ -382,8 +382,8 @@ __git_ps1 ()
 
 	if [ "true" = "$inside_worktree" ] &&
 	   [ -n "${GIT_PS1_HIDE_IF_PWD_IGNORED-}" ] &&
-	   [ "$(git config --bool bash.hideIfPwdIgnored)" != "false" ] &&
-	   git check-ignore -q .
+	   [ "$(/usr/local/bin/git config --bool bash.hideIfPwdIgnored)" != "false" ] &&
+	   /usr/local/bin/git check-ignore -q .
 	then
 		return $exit
 	fi
@@ -427,7 +427,7 @@ __git_ps1 ()
 			:
 		elif [ -h "$g/HEAD" ]; then
 			# symlink symbolic ref
-			b="$(git symbolic-ref HEAD 2>/dev/null)"
+			b="$(/usr/local/bin/git symbolic-ref HEAD 2>/dev/null)"
 		else
 			local head=""
 			if ! __git_eread "$g/HEAD" head; then
@@ -440,13 +440,13 @@ __git_ps1 ()
 				b="$(
 				case "${GIT_PS1_DESCRIBE_STYLE-}" in
 				(contains)
-					git describe --contains HEAD ;;
+					/usr/local/bin/git describe --contains HEAD ;;
 				(branch)
-					git describe --contains --all HEAD ;;
+					/usr/local/bin/git describe --contains --all HEAD ;;
 				(describe)
-					git describe HEAD ;;
+					/usr/local/bin/git describe HEAD ;;
 				(* | default)
-					git describe --tags --exact-match HEAD ;;
+					/usr/local/bin/git describe --tags --exact-match HEAD ;;
 				esac 2>/dev/null)" ||
 
 				b="$short_sha..."
@@ -474,23 +474,23 @@ __git_ps1 ()
 		fi
 	elif [ "true" = "$inside_worktree" ]; then
 		if [ -n "${GIT_PS1_SHOWDIRTYSTATE-}" ] &&
-		   [ "$(git config --bool bash.showDirtyState)" != "false" ]
+		   [ "$(/usr/local/bin/git config --bool bash.showDirtyState)" != "false" ]
 		then
-			git diff --no-ext-diff --quiet || w="*"
-			git diff --no-ext-diff --cached --quiet || i="+"
+			/usr/local/bin/git diff --no-ext-diff --quiet || w="*"
+			/usr/local/bin/git diff --no-ext-diff --cached --quiet || i="+"
 			if [ -z "$short_sha" ] && [ -z "$i" ]; then
 				i="#"
 			fi
 		fi
 		if [ -n "${GIT_PS1_SHOWSTASHSTATE-}" ] &&
-		   git rev-parse --verify --quiet refs/stash >/dev/null
+		   /usr/local/bin/git rev-parse --verify --quiet refs/stash >/dev/null
 		then
 			s="$"
 		fi
 
 		if [ -n "${GIT_PS1_SHOWUNTRACKEDFILES-}" ] &&
-		   [ "$(git config --bool bash.showUntrackedFiles)" != "false" ] &&
-		   git ls-files --others --exclude-standard --directory --no-empty-directory --error-unmatch -- ':/*' >/dev/null 2>/dev/null
+		   [ "$(/usr/local/bin/git config --bool bash.showUntrackedFiles)" != "false" ] &&
+		   /usr/local/bin/git ls-files --others --exclude-standard --directory --no-empty-directory --error-unmatch -- ':/*' >/dev/null 2>/dev/null
 		then
 			u="%${ZSH_VERSION+%}"
 		fi

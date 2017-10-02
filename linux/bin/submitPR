@@ -1,0 +1,120 @@
+#!/bin/bash
+
+#user="trilinos"
+#fork="EM-Plasma"
+#repo="Trilinos"
+#mainBranch="develop"
+#trackingBranch="real-$mainBranch"
+user="jmgate"
+fork="EM-Plasma"
+repo="deleteMe"
+mainBranch="develop"
+trackingBranch="real-$mainBranch"
+branchExtension="_"
+
+usage="Usage:  blah PR#, where PR# is a valid pull request number for $fork/$repo, and that pull request has already been merged into $mainBranch."
+
+# Ensure that we were only passed a single command line argument.
+if [[ $# -ne 1 ]]; then
+  echo $usage
+  exit 1
+fi
+
+# Ensure that the argument was an integer.
+re='^[0-9]+$'
+if ! [[ $1 =~ $re ]]; then
+  echo $usage
+  echo "$1 must be an integer."
+  exit 2
+fi
+
+# Get the details from that pull request.
+pr=$1
+token=$(cat ~/.githubOAuth/token)
+h="'Authorization: token $token'"
+cmd=$(echo curl -i -H $h https://api.github.com/repos/$fork/$repo/pulls/$pr)
+prFile=.prFile
+eval $cmd &> $prFile
+
+# Ensure the pull request number was valid.
+if grep "message.*Not Found" $prFile > /dev/null; then
+  echo $usage
+  echo "It looks like pull request $pr does not exist in $fork/$repo."
+  exit 3
+fi
+
+# Ensure the pull request was actually merged into $mainBranch.
+if grep "merged_at.*null" $prFile > /dev/null; then
+  echo $usage
+  echo "It looks like pull request $pr has not yet been merged into $mainBranch in $fork/$repo."
+  exit 4
+fi
+
+# Get the branch name from the pull request.
+featureBranch=$(awk 'FNR == 1 {
+    getline nextLine < FILENAME
+  }
+  {
+    getline nextLine < FILENAME;
+    if ($1 ~ /head/)
+      print nextLine
+  }' $prFile | \
+  awk '{
+    sub(/^[ \t]+|[ \t]+$/, "");
+    sub(/,$/, "");
+    gsub(/"/, "");
+    print $2
+  }' | awk -F: '{ print $2 }')
+newFeatureBranch="$featureBranch$branchExtension"
+
+echo
+echo "This script will create a pull request against the $mainBranch branch of the $user/$repo repository containing the changes just merged from the $featureBranch branch into the $mainBranch branch of the $fork/$repo repository via pull request #$pr."
+echo "────────────────────────────────────────────────────────────────────────"
+
+# Make sure the local $mainBranch and $trackingBranch are up-to-date after the
+# pull request was merged.
+echo
+echo "Updating $mainBranch..."
+echo "────────────────────────────────────────────────────────────────────────"
+git checkout $mainBranch
+git pull --rebase
+echo
+echo "Updating $trackingBranch..."
+echo "────────────────────────────────────────────────────────────────────────"
+git checkout $trackingBranch
+git pull --rebase
+
+# Take the changes that were on the $featureBranch and rebase them on top of
+# $trackingBranch.
+echo
+echo "Rebasing the changes from $featureBranch onto $trackingBranch..."
+echo "────────────────────────────────────────────────────────────────────────"
+oldestAncestor=$(diff -u                                                      \
+  <(git rev-list --first-parent $mainBranch)                                  \
+  <(git rev-list --first-parent $featureBranch)                               \
+  | sed -ne "s/^ //p" | head -1)
+echo "Oldest ancestor between $featureBranch and $mainBranch:  $oldestAncestor."
+echo "Creating $newFeatureBranch."
+git branch $newFeatureBranch $featureBranch
+echo "Rebasing $oldestAncestor..$(git rev-parse $newFeatureBranch) onto $trackingBranch."
+git rebase --onto $trackingBranch $oldestAncestor $newFeatureBranch
+
+# Push this $newFeatureBranch up to the remote $fork/$repo.
+echo
+echo "Pushing $newFeatureBranch up to the remote $fork/$repo..."
+echo "────────────────────────────────────────────────────────────────────────"
+git push -u origin $newFeatureBranch
+
+# Issue a pull request from this $newFeatureBranch against the real $repo
+# $mainBranch.
+echo
+echo "Creating a pull request from $fork's $newFeatureBranch against $user's $mainBranch..."
+echo "────────────────────────────────────────────────────────────────────────"
+d="'{$(awk '$1 ~ /title/ { print }' $prFile)"
+d="$d$(awk '$1 ~ /body/ { print }' $prFile)"
+rm $prFile
+d="$d \"head\": \"$fork:$newFeatureBranch\", \"base\": \"$mainBranch\"}'"
+cmd=$(echo curl -i -H $h -d $d https://api.github.com/repos/$user/$repo/pulls)
+eval $cmd
+git checkout $mainBranch
+git branch -D $featureBranch

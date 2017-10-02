@@ -30,7 +30,7 @@ if [[ $# -eq 2 ]]; then
 fi
 echo "$file is being divvied up into:"
 for i in $(seq 0 $(($numProcs - 1))); do
-  grep "p=$i" $file > p$i$file
+  grep "p=\s*$i |" $file > p$i$file
   echo "p$i$file"
 done
 exit 0

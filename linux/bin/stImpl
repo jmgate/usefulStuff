@@ -5,7 +5,6 @@ usual=false
 fork=false
 trilinos=false
 drekarBase=false
-drekarResearch=false
 drekarSystemTests=false
 drekarDocuments=false
 charon=false
@@ -33,7 +32,6 @@ do
     -f   |--fork                  ) fork=true                  ;;
     -t   |--trilinos              ) trilinos=true              ;;
     -db  |--drekar-base           ) drekarBase=true            ;;
-    -dr  |--drekar-research       ) drekarResearch=true        ;;
     -dst |--drekar-system-tests   ) drekarSystemTests=true     ;;
     -dd  |--drekar-documents      ) drekarDocuments=true       ;;
     -c   |--charon                ) charon=true                ;;
@@ -57,7 +55,6 @@ done
 if $all; then
   trilinos=true
   drekarBase=true
-  drekarResearch=true
   drekarSystemTests=true
   drekarDocuments=true
   charon=true
@@ -67,12 +64,10 @@ fi
 if $usual; then
   trilinos=true
   drekarBase=true
-  drekarResearch=true
   charon=true
 fi
 if $noTrilinos;          then trilinos=false;          fi
 if $noDrekarBase;        then drekarBase=false;        fi
-if $noDrekarResearch;    then drekarResearch=false;    fi
 if $noDrekarSystemTests; then drekarSystemTests=false; fi
 if $noDrekarDocuments;   then drekarDocuments=false;   fi
 if $noCharon;            then charon=false;            fi
@@ -81,22 +76,20 @@ if $noCharonOuoData;     then charonOuoData=false;     fi
 if $showHelp; then
   echo "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓"
   echo "┃ This script will issue a 'git status' in the following repositories:        ┃"
-  echo "┃   Trilinos      DrekarResearch       DrekarDocuments    charon-data         ┃"
-  echo "┃   DrekarBase    DrekarSystemTests    tcad-charon        charon-ouo-data     ┃"
+  echo "┃   Trilinos      DrekarSystemTests    tcad-charon     charon-ouo-data        ┃"
+  echo "┃   DrekarBase    DrekarDocuments      charon-data                            ┃"
   echo "┠─────────────────────────────────────────────────────────────────────────────┨"
   echo "┃ Usage:  gitStatus [options]                                                 ┃"
   echo "┃   With no options specified, you will be asked before running 'git status'  ┃"
   echo "┃   in each repository.  The available options are:                           ┃"
   echo "┃     -h, --help:   Display this help message.                                ┃"
   echo "┃     -a, --all:    Status all repositories.                                  ┃"
-  echo "┃     -u, --usual:  Status Trilinos, DrekarBase, DrekarResearch, and          ┃"
-  echo "┃                   tcad-charon.                                              ┃"
+  echo "┃     -u, --usual:  Status Trilinos, DrekarBase, and tcad-charon.             ┃"
   echo "┃     -f, --fork:   Status the jmgate/Trilinos fork instead of                ┃"
   echo "┃                   trilinos/Trilinos itself.                                 ┃"
   echo "┃   The options below will status the corresponding repositories:             ┃"
   echo "┃     -t,    --trilinos                                                       ┃"
   echo "┃     -db,   --drekar-base                                                    ┃"
-  echo "┃     -dr,   --drekar-research                                                ┃"
   echo "┃     -dst,  --drekar-system-tests                                            ┃"
   echo "┃     -dd,   --drekar-documents                                               ┃"
   echo "┃     -c,    --charon                                                         ┃"
@@ -106,7 +99,6 @@ if $showHelp; then
   echo "┃     (to use in conjunction with --all, for instance):                       ┃"
   echo "┃     -nt,   --no-trilinos                                                    ┃"
   echo "┃     -ndb,  --no-drekar-base                                                 ┃"
-  echo "┃     -ndr,  --no-drekar-research                                             ┃"
   echo "┃     -ndst, --no-drekar-system-tests                                         ┃"
   echo "┃     -ndd,  --no-drekar-documents                                            ┃"
   echo "┃     -nc,   --no-charon                                                      ┃"
@@ -142,7 +134,6 @@ statusRepo()
 if $fork; then
   statusRepo $trilinos          "Trilinos"          $FORKED_TRILINOS_DIR
   statusRepo $drekarBase        "DrekarBase"        $FORKED_DREKAR_BASE_DIR
-  statusRepo $drekarResearch    "DrekarResearch"    $FORKED_DREKAR_RESEARCH_DIR
   statusRepo $drekarSystemTests "DrekarSystemTests" $DREKAR_SYSTEM_TESTS_DIR
   statusRepo $drekarDocuments   "DrekarDocuments"   $DREKAR_DOCS_DIR
   statusRepo $charon            "tcad-charon"       $FORKED_CHARON_DIR
@@ -151,7 +142,6 @@ if $fork; then
 else
   statusRepo $trilinos          "Trilinos"          $TRILINOS_DIR
   statusRepo $drekarBase        "DrekarBase"        $DREKAR_BASE_DIR
-  statusRepo $drekarResearch    "DrekarResearch"    $DREKAR_RESEARCH_DIR
   statusRepo $drekarSystemTests "DrekarSystemTests" $DREKAR_SYSTEM_TESTS_DIR
   statusRepo $drekarDocuments   "DrekarDocuments"   $DREKAR_DOCS_DIR
   statusRepo $charon            "tcad-charon"       $CHARON_DIR
