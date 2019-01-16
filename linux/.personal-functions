@@ -1,0 +1,69 @@
+#!/bin/bash
+
+# cd with history.
+function myCd
+{
+  if [ $# -ge 1 ]; then
+    pushd $@ > /dev/null
+  else
+    pushd $HOME > /dev/null;
+  fi
+} # end of function myCd
+alias cd="myCd"
+
+# Move back up the directory stack.
+function myBack
+{
+  num=1
+  if [ $# -ge 1 ]; then
+    re='^[0-9]+$'
+    if ! [[ $1 =~ $re ]]; then
+      echo "Error:  argument = $1 must be an integer."
+      exit 1
+    fi
+    num=$1
+  fi
+  for i in $(seq 1 $num); do
+    popd > /dev/null
+  done
+} # end of function myBack
+alias back="myBack"
+
+# Move up one or more directories.
+function myUp
+{
+  num=1
+  if [ $# -ge 1 ]; then
+    re='^[0-9]+$'
+    if ! [[ $1 =~ $re ]]; then
+      echo "Error:  argument = $1 must be an integer."
+      exit 1
+    fi
+    num=$1
+  fi
+  str=".."
+  for i in $(seq 2 $num); do
+    str="${str}/.."
+  done
+  myCd ${str}
+} # end of function myUp
+alias up="myUp"
+
+# Git branch with descriptions.
+function gitBranchDescriptions
+{
+  branches=$(git for-each-ref --format='%(refname)' refs/heads/ | sed 's|refs/heads/||')
+  for branch in $branches; do
+    desc=$(git config branch.$branch.description)
+    if [ $branch == $(git rev-parse --abbrev-ref HEAD) ]; then
+      branch="* \033[0;32m$branch\033[0m"
+    else
+      branch="  $branch"
+    fi
+    echo -e "$branch \033[0;36m"
+    while read -r line; do
+      echo "    $line"
+    done <<< "$desc"
+    echo -e "\033[0m"
+  done
+} # end of function gitBranchDescriptions

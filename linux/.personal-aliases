@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Generally useful aliases.
+alias .b="source ~/.bashrc"
+alias .bp="source ~/.bash_profile"
+alias vi=vim
+alias less="less -R"
+alias grep="grep --color --exclude-dir=doc --exclude-dir=.git"
+alias rgrep="grep -rsIn"
+alias f="find . -name"
+alias o="gio open"
+alias rm="rm -v"
+alias dirs="dirs -v"
+alias tree="tree -C --charset UTF8"
+alias ssh="ssh -Y"
+alias texdocs="cd /usr/local/texlive/2016/texmf-dist/doc"
+alias valgrind="valgrind -v --leak-check=full --suppressions=${HOME}/valgrind.supp"
+
+# Machine aliases.
+alias skybridge="ssh jmgate@skybridge.sandia.gov"
+alias hansen="ssh jmgate@hansen.sandia.gov"
+alias shiller="ssh jmgate@shiller.sandia.gov"
+alias estolad="ssh jmgate@estolad.sandia.gov"
+alias mac="ssh jmgate@s1001843.srn.sandia.gov"
+alias linux="ssh jmgate@s1002179.srn.sandia.gov"
+alias chama="ssh jmgate@chama.sandia.gov"
+alias breve="ssh jmgate@breve.sandia.gov"
+alias cortado="ssh jmgate@cortado.sandia.gov"
+alias doppio="ssh jmgate@doppio.sandia.gov"

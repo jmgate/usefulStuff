@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# Git configuration.
+source ~/.git-completion.bash
+source ~/.git-prompt.sh
+alias g="git"
+complete -o default -o nospace -F _git g
+_git_p()
+{
+  _git_push
+} # end of _git_p()
+_git_up()
+{
+  _git_push
+} # end of _git_up()
+_git_finish()
+{
+  _git_checkout
+} # end of _git_finish()
+
+# gitdist configuration.
+export GITDIST_MOVE_TO_BASE_DIR=EXTREME_BASE
+alias gd=gitdist
+alias gds="gitdist dist-repo-status --dist-utf8-output"
+alias gdc="gitdist --dist-repos=Trilinos/tcad-charon,charon/charon-data,charon/charon-ouo-data"
+alias gde="gitdist --dist-repos=Trilinos,empire/EMPIRE,empire/EMPIRE-PIC,empire/EMPIRE-Fluid,empire/EMPIRE-Hybrid,empire/SPIN,empire/BuildScripts"
+alias gdd="gitdist --dist-repos=Trilinos/DrekarBase"
+alias gdcod="gitdist checkout _DEFAULT_BRANCH_"
+complete -o default -o nospace -F _git gd
+complete -o default -o nospace -F _git gdc
+complete -o default -o nospace -F _git gde
+complete -o default -o nospace -F _git gdd

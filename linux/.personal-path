@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# Set various PATH variables.
+export TRIBITS_BASE_DIR=${MY_HOME}/TriBITS
+# old stuff
+PATH="${TRIBITS_BASE_DIR}/tribits/python_utils:${PATH}"
+PATH="${TRIBITS_BASE_DIR}/tribits/ci_support:${PATH}"
+PATH="/home/jmgate/Downloads/p4v-2017.1.1491634_x64/bin:${PATH}"
+PATH="/home/jmgate/Downloads/ParaView-5.1.2-Qt4-OpenGL2-MPI-Linux-64bit/bin:${PATH}"
+PATH="/usr/local/texlive/2016/bin/x86_64-linux:${PATH}"
+PATH="${MY_HOME}/install/bin:${PATH}"
+PATH="/home/jmgate/bin:${PATH}"
+PATH="/usr/local/bin:${PATH}"
+PATH="/usr/totalview/bin:${PATH}"
+# new stuff
+PATH="/home/jmgate/toolchain/install/gcc-7.3.0/bin:${PATH}"
+PATH="/home/jmgate/toolchain/install/openmpi-3.0.0/bin:${PATH}"
+PATH="/home/jmgate/toolchain/install/cmake-3.11.0/bin:${PATH}"
+PATH="/home/jmgate/toolchain/install/anaconda3-5.1.0/bin:${PATH}"
+PATH="/home/jmgate/toolchain/install/hdf5-1.10.1/bin:${PATH}"
+PATH="/home/jmgate/toolchain/install/parallel-netcdf-1.9.0/bin:${PATH}"
+PATH="/home/jmgate/toolchain/install/netcdf-4.6.0/bin:${PATH}"
+PATH="/home/jmgate/toolchain/install/parmetis-4.0.3/bin:${PATH}"
+PATH="/home/jmgate/toolchain/install/papi-5.6.1.0/bin:${PATH}"
+PATH="/home/jmgate/toolchain/install/gitkraken:${PATH}"
+PATH="/home/jmgate/toolchain/install/spack-0.12.0/bin:${PATH}"
+export PATH
+# old stuff
+LD_LIBRARY_PATH="/usr/lib64:${LD_LIBRARY_PATH}"
+LD_LIBRARY_PATH="/usr/local/lib64:${LD_LIBRARY_PATH}"
+LD_LIBRARY_PATH="/usr/local/lib:${LD_LIBRARY_PATH}"
+# new stuff
+LD_LIBRARY_PATH="/home/jmgate/toolchain/install/gcc-7.3.0/lib:${LD_LIBRARY_PATH}"
+LD_LIBRARY_PATH="/home/jmgate/toolchain/install/gcc-7.3.0/lib64:${LD_LIBRARY_PATH}"
+LD_LIBRARY_PATH="/home/jmgate/toolchain/install/openmpi-3.0.0/lib:${LD_LIBRARY_PATH}"
+LD_LIBRARY_PATH="/home/jmgate/toolchain/install/lapack-3.8.0/lib64:${LD_LIBRARY_PATH}"
+LD_LIBRARY_PATH="/home/jmgate/toolchain/install/boost-1.66.0/lib:${LD_LIBRARY_PATH}"
+LD_LIBRARY_PATH="/home/jmgate/toolchain/install/zlib-1.2.11/lib:${LD_LIBRARY_PATH}"
+LD_LIBRARY_PATH="/home/jmgate/toolchain/install/hdf5-1.10.1/lib:${LD_LIBRARY_PATH}"
+LD_LIBRARY_PATH="/home/jmgate/toolchain/install/parallel-netcdf-1.9.0/lib:${LD_LIBRARY_PATH}"
+LD_LIBRARY_PATH="/home/jmgate/toolchain/install/netcdf-4.6.0/lib:${LD_LIBRARY_PATH}"
+LD_LIBRARY_PATH="/home/jmgate/toolchain/install/parmetis-4.0.3/lib:${LD_LIBRARY_PATH}"
+LD_LIBRARY_PATH="/home/jmgate/toolchain/install/papi-5.6.1.0/lib:${LD_LIBRARY_PATH}"
+export LD_LIBRARY_PATH
+export MANPATH=/usr/local/texlive/2016/texmf-dist/doc/man:${MANPATH}
+export INFOPATH=/usr/local/texlive/2016/texmf-dist/doc/info:${INFOPATH}

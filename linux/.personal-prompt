@@ -1,0 +1,68 @@
+#!/bin/bash
+
+# The following creates a three- or four-line prompt that looks like the
+# following:
+#   <blank line>
+#   <machine name>: <current working directory> ----------------- <date> <time>
+#   [<command #>] <user name> (<git branch name>)$
+# or, if <git branch name> is too long,
+#   <blank line>
+#   <machine name>: <current working directory> ----------------- <date> <time>
+#   (<git branch name>)
+#   [<command #>] <user name>$
+function promptCommand
+{
+  local FG_BLUE="\[\e[34m\]"
+  local FG_DEFAULT="\[\e[39m\]"
+  local BG_RED="\[\e[101m\]"
+  local BG_YELLOW="\[\e[103m\]"
+  local BG_DEFAULT="\[\e[49m\]"
+  local branch=$(__git_ps1 "%s")
+  local branchLength=${#branch}
+  local tooLong=$(($(tput cols) / 3))
+  if [[ $branch != "" ]]; then
+    local upstream=$(git for-each-ref --format="%(upstream:short)" $(git symbolic-ref -q HEAD))
+    if [[ $upstream != "" ]]; then
+      branch="${FG_BLUE}$(echo $upstream | awk -F/ '{print $1}')/${FG_DEFAULT}${branch}"
+    fi
+    if [[ -f $(git rev-parse --git-dir)/FETCH_HEAD ]]; then
+      local secondsSinceFetch=$(($(date +%s) - $(stat -c %Y $(git rev-parse --git-dir)/FETCH_HEAD)))
+      local minutesSinceFetch=$(($secondsSinceFetch / 60))
+      local hoursSinceFetch=$((minutesSinceFetch / 60))
+      local daysSinceFetch=$((hoursSinceFetch / 24))
+      branch=$branch"|"
+      if [[ $daysSinceFetch -gt 0 ]]; then
+        if [[ $daysSinceFetch -gt 5 ]]; then
+          branch="$branch${BG_RED}"
+        elif [[ $daysSinceFetch -gt 2 ]]; then
+          branch="$branch${BG_YELLOW}"
+        fi
+        branch=$branch$daysSinceFetch"d${BG_DEFAULT}"
+      elif [[ $hoursSinceFetch -gt 0 ]]; then
+        branch=$branch$hoursSinceFetch"h"
+      elif [[ $minutesSinceFetch -gt 0 ]]; then
+        branch=$branch$minutesSinceFetch"m"
+      else
+        branch=$branch$secondsSinceFetch"s"
+      fi
+    fi
+    branch="($branch)"
+  fi
+  local hostname="$(hostname --short)"
+  local pwd="${PWD}"
+  local availableSpace=$(($(tput cols) - ${#hostname} - 24))
+  if [ ${#pwd} -gt ${availableSpace} ]; then
+    pwd="...${pwd:$((${#pwd} - ${availableSpace} + 3))}"
+  fi
+  PS1="\n\[$(printf "%*s" $(($(tput cols) - 20)) "" | sed "s/ /─/g") \d \t\r${hostname}: ${pwd} \]\n"
+  if [ $branchLength -gt $tooLong ]; then
+    PS1=$PS1"$branch\n[\#] \u\$ "
+  else
+    if [[ $branch != "" ]]; then
+      branch=" $branch"
+    fi
+    PS1=$PS1"[\#] \u$branch\$ "
+  fi
+  export PS1
+}
+PROMPT_COMMAND=promptCommand
