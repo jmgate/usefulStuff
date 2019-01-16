@@ -1,5 +1,0 @@
-#!/bin/bash
-echo "Use gitdist instead."
-exit 1
-script --return -c "pullImpl $@" /dev/null |& logit pull
-sed -i "s/^.*//" $(latest pull)

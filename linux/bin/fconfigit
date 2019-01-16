@@ -1,4 +1,0 @@
-#!/bin/bash
-old=${PWD}
-cd ${FORKED_DREKAR_BUILD_DIR} && script --return -c "../fconfigureDrekar" /dev/null |& logit fconfig
-cd ${old}
