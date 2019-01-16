@@ -1,4 +1,4 @@
 #!/bin/bash
 old=${PWD}
-cd ${DREKAR_BUILD_DIR} && unbuffer ../configureDrekar |& logit config
+cd ${TRILINOS_BUILD_DIR} && script --return -c "../configureTrilinos" /dev/null |& logit config
 cd ${old}

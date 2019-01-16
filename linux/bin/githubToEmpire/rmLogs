@@ -1,0 +1,9 @@
+#!/bin/bash -x
+cd /home/jmgate/githubToEmpire/logs
+for file in $(ls -1 sync*.log | head -n -2); do
+  lastLine=$(tail -n 1 $file)
+  if [[ "$lastLine" == "Everything up-to-date" || \
+        "$lastLine" == "Already up-to-date." ]]; then
+    rm $file
+  fi
+done

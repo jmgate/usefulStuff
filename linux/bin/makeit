@@ -1,2 +1,3 @@
 #!/bin/bash
-unbuffer make -j48 |& logit make
+script --return -c "make -j 16" /dev/null |& logit make
+sed -i "s/\r//" $(latest make)

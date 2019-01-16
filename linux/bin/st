@@ -1,3 +1,5 @@
 #!/bin/bash
-unbuffer stImpl $@ |& logit st
+echo "Use gitdist instead."
+exit 1
+script --return -c "stImpl $@" /dev/null |& logit st
 sed -i "s/^.*//" $(latest st)

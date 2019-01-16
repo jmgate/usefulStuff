@@ -7,20 +7,37 @@ fi
 
 # Load modules.
 module purge
-#module load sems-env
-#module load sems-cmake/3.5.2
-#module load sems-gcc/5.1.0
-#module load sems-openmpi/1.8.7
-#module load sems-git/2.1.3
-#module load sems-netcdf/4.3.2/parallel
-#module load sems-boost/1.59.0/base
-#module load sems-hdf5/1.8.12/parallel
-#module load sems-tex/2015
-#module load parmetis/4.0.3/gcc/5.1.0/openmpi/1.8.7
 
 # Git configuration.
 source ~/.git-completion.bash
 source ~/.git-prompt.sh
+alias g="git"
+complete -o default -o nospace -F _git g
+_git_p()
+{
+  _git_push
+} # end of _git_p()
+_git_up()
+{
+  _git_push
+} # end of _git_up()
+_git_finish()
+{
+  _git_checkout
+} # end of _git_finish()
+
+# gitdist configuration.
+export GITDIST_MOVE_TO_BASE_DIR=EXTREME_BASE
+alias gd=gitdist
+alias gds="gitdist dist-repo-status --dist-utf8-output"
+alias gdc="gitdist --dist-repos=Trilinos/tcad-charon,charon/charon-data,charon/charon-ouo-data"
+alias gde="gitdist --dist-repos=Trilinos,empire/EMPIRE,empire/EMPIRE-PIC,empire/EMPIRE-Fluid,empire/EMPIRE-Hybrid,empire/SPIN,empire/BuildScripts"
+alias gdd="gitdist --dist-repos=Trilinos/DrekarBase"
+alias gdcod="gitdist checkout _DEFAULT_BRANCH_"
+complete -o default -o nospace -F _git gd
+complete -o default -o nospace -F _git gdc
+complete -o default -o nospace -F _git gde
+complete -o default -o nospace -F _git gdd
 
 # Proxy settings.
 export http_proxy=http://wwwproxy.sandia.gov:80
@@ -38,14 +55,58 @@ export https_proxy=http://wwwproxy.sandia.gov:80
 #   [<command #>] <user name>$
 function promptCommand
 {
-  branchName=$(__git_ps1)
-  tooLong=$(($(tput cols) / 3))
-  PS1='\n\[$(printf "%*s" $(($(tput cols) - 20)) "" | sed "s/ /─/g") \d \t\r\h: \w \]\n'
-  if [ ${#branchName} -gt $tooLong ]; then
-    export PS1=$PS1'$(__git_ps1 "(%s)")\n[\#] \u\$ '
-  else
-    export PS1=$PS1'[\#] \u$(__git_ps1)\$ '
+  local FG_BLUE="\[\e[34m\]"
+  local FG_DEFAULT="\[\e[39m\]"
+  local BG_RED="\[\e[101m\]"
+  local BG_YELLOW="\[\e[103m\]"
+  local BG_DEFAULT="\[\e[49m\]"
+  local branch=$(__git_ps1 "%s")
+  local branchLength=${#branch}
+  local tooLong=$(($(tput cols) / 3))
+  if [[ $branch != "" ]]; then
+    local upstream=$(git for-each-ref --format="%(upstream:short)" $(git symbolic-ref -q HEAD))
+    if [[ $upstream != "" ]]; then
+      branch="${FG_BLUE}$(echo $upstream | awk -F/ '{print $1}')/${FG_DEFAULT}${branch}"
+    fi
+    if [[ -f $(git rev-parse --git-dir)/FETCH_HEAD ]]; then
+      local secondsSinceFetch=$(($(date +%s) - $(stat -c %Y $(git rev-parse --git-dir)/FETCH_HEAD)))
+      local minutesSinceFetch=$(($secondsSinceFetch / 60))
+      local hoursSinceFetch=$((minutesSinceFetch / 60))
+      local daysSinceFetch=$((hoursSinceFetch / 24))
+      branch=$branch"|"
+      if [[ $daysSinceFetch -gt 0 ]]; then
+        if [[ $daysSinceFetch -gt 5 ]]; then
+          branch="$branch${BG_RED}"
+        elif [[ $daysSinceFetch -gt 2 ]]; then
+          branch="$branch${BG_YELLOW}"
+        fi
+        branch=$branch$daysSinceFetch"d${BG_DEFAULT}"
+      elif [[ $hoursSinceFetch -gt 0 ]]; then
+        branch=$branch$hoursSinceFetch"h"
+      elif [[ $minutesSinceFetch -gt 0 ]]; then
+        branch=$branch$minutesSinceFetch"m"
+      else
+        branch=$branch$secondsSinceFetch"s"
+      fi
+    fi
+    branch="($branch)"
   fi
+  local hostname="$(hostname --short)"
+  local pwd="${PWD}"
+  local availableSpace=$(($(tput cols) - ${#hostname} - 24))
+  if [ ${#pwd} -gt ${availableSpace} ]; then
+    pwd="...${pwd:$((${#pwd} - ${availableSpace} + 3))}"
+  fi
+  PS1="\n\[$(printf "%*s" $(($(tput cols) - 20)) "" | sed "s/ /─/g") \d \t\r${hostname}: ${pwd} \]\n"
+  if [ $branchLength -gt $tooLong ]; then
+    PS1=$PS1"$branch\n[\#] \u\$ "
+  else
+    if [[ $branch != "" ]]; then
+      branch=" $branch"
+    fi
+    PS1=$PS1"[\#] \u$branch\$ "
+  fi
+  export PS1
 }
 PROMPT_COMMAND=promptCommand
 
@@ -53,22 +114,59 @@ PROMPT_COMMAND=promptCommand
 export VISUAL='vi'
 
 # Set less to use colors and case-insensitive search.
-export LESS=-Ri
+export LESS=-FRiX
 
 # MY_HOME will be the location on my solid state drive in which I do all my
 # building and running.
-export MY_HOME=/build
+export MY_HOME=/workspace
 
 # Set various PATH variables.
-export TRIBITS_BASE_DIR=~/TriBITS
-export GITDIST_MOVE_TO_BASE_DIR=EXTREME_BASE
-export PATH=${TRIBITS_BASE_DIR}/tribits/python_utils:${TRIBITS_BASE_DIR}/tribits/ci_support:~/Downloads/p4v-2017.1.1491634_x64/bin:~/Downloads/ParaView-5.1.2-Qt4-OpenGL2-MPI-Linux-64bit/bin:~/eclipse/cpp-neon/eclipse:/usr/local/texlive/2016/bin/x86_64-linux:${MY_HOME}/Packages/install/bin:${MY_HOME}/Packages/forked-install/bin:~/bin:~/anaconda3/bin:~/Downloads/cmake-3.6.1-Linux-x86_64/bin:/usr/local/bin:/usr/totalview/bin:~/gitkraken:${PATH}
-export LD_LIBRARY_PATH=/usr/lib64:/usr/local/lib64:/usr/local/lib:/usr/local/hdf5/lib:${LD_LIBRARY_PATH}
+export TRIBITS_BASE_DIR=${MY_HOME}/TriBITS
+# old stuff
+PATH="${TRIBITS_BASE_DIR}/tribits/python_utils:${PATH}"
+PATH="${TRIBITS_BASE_DIR}/tribits/ci_support:${PATH}"
+PATH="/home/jmgate/Downloads/p4v-2017.1.1491634_x64/bin:${PATH}"
+PATH="/home/jmgate/Downloads/ParaView-5.1.2-Qt4-OpenGL2-MPI-Linux-64bit/bin:${PATH}"
+PATH="/usr/local/texlive/2016/bin/x86_64-linux:${PATH}"
+PATH="${MY_HOME}/install/bin:${PATH}"
+PATH="/home/jmgate/bin:${PATH}"
+PATH="/usr/local/bin:${PATH}"
+PATH="/usr/totalview/bin:${PATH}"
+# new stuff
+PATH="/home/jmgate/toolchain/install/gcc-7.3.0/bin:${PATH}"
+PATH="/home/jmgate/toolchain/install/openmpi-3.0.0/bin:${PATH}"
+PATH="/home/jmgate/toolchain/install/cmake-3.11.0/bin:${PATH}"
+PATH="/home/jmgate/toolchain/install/anaconda3-5.1.0/bin:${PATH}"
+PATH="/home/jmgate/toolchain/install/hdf5-1.10.1/bin:${PATH}"
+PATH="/home/jmgate/toolchain/install/parallel-netcdf-1.9.0/bin:${PATH}"
+PATH="/home/jmgate/toolchain/install/netcdf-4.6.0/bin:${PATH}"
+PATH="/home/jmgate/toolchain/install/parmetis-4.0.3/bin:${PATH}"
+PATH="/home/jmgate/toolchain/install/papi-5.6.1.0/bin:${PATH}"
+PATH="/home/jmgate/toolchain/install/gitkraken:${PATH}"
+PATH="/home/jmgate/toolchain/install/spack-0.12.0/bin:${PATH}"
+export PATH
+# old stuff
+LD_LIBRARY_PATH="/usr/lib64:${LD_LIBRARY_PATH}"
+LD_LIBRARY_PATH="/usr/local/lib64:${LD_LIBRARY_PATH}"
+LD_LIBRARY_PATH="/usr/local/lib:${LD_LIBRARY_PATH}"
+# new stuff
+LD_LIBRARY_PATH="/home/jmgate/toolchain/install/gcc-7.3.0/lib:${LD_LIBRARY_PATH}"
+LD_LIBRARY_PATH="/home/jmgate/toolchain/install/gcc-7.3.0/lib64:${LD_LIBRARY_PATH}"
+LD_LIBRARY_PATH="/home/jmgate/toolchain/install/openmpi-3.0.0/lib:${LD_LIBRARY_PATH}"
+LD_LIBRARY_PATH="/home/jmgate/toolchain/install/lapack-3.8.0/lib64:${LD_LIBRARY_PATH}"
+LD_LIBRARY_PATH="/home/jmgate/toolchain/install/boost-1.66.0/lib:${LD_LIBRARY_PATH}"
+LD_LIBRARY_PATH="/home/jmgate/toolchain/install/zlib-1.2.11/lib:${LD_LIBRARY_PATH}"
+LD_LIBRARY_PATH="/home/jmgate/toolchain/install/hdf5-1.10.1/lib:${LD_LIBRARY_PATH}"
+LD_LIBRARY_PATH="/home/jmgate/toolchain/install/parallel-netcdf-1.9.0/lib:${LD_LIBRARY_PATH}"
+LD_LIBRARY_PATH="/home/jmgate/toolchain/install/netcdf-4.6.0/lib:${LD_LIBRARY_PATH}"
+LD_LIBRARY_PATH="/home/jmgate/toolchain/install/parmetis-4.0.3/lib:${LD_LIBRARY_PATH}"
+LD_LIBRARY_PATH="/home/jmgate/toolchain/install/papi-5.6.1.0/lib:${LD_LIBRARY_PATH}"
+export LD_LIBRARY_PATH
 export MANPATH=/usr/local/texlive/2016/texmf-dist/doc/man:${MANPATH}
 export INFOPATH=/usr/local/texlive/2016/texmf-dist/doc/info:${INFOPATH}
 
-# Set Trilinos-related environment variables.
-export TRILINOS_DIR=${MY_HOME}/Packages/Trilinos
+# Set location-related environment variables.
+export TRILINOS_DIR=${MY_HOME}/Trilinos
 export AMESOS_DIR=${TRILINOS_DIR}/packages/amesos
 export EPETRA_DIR=${TRILINOS_DIR}/packages/epetra
 export KOKKOS_DIR=${TRILINOS_DIR}/packages/kokkos
@@ -81,41 +179,34 @@ export SACADO_DIR=${TRILINOS_DIR}/packages/sacado
 export STK_DIR=${TRILINOS_DIR}/packages/stk
 export STRATIMIKOS_DIR=${TRILINOS_DIR}/packages/stratimikos
 export TEKO_DIR=${TRILINOS_DIR}/packages/teko
+export TEMPUS_DIR=${TRILINOS_DIR}/packages/tempus
 export TEUCHOS_DIR=${TRILINOS_DIR}/packages/teuchos
 export THYRA_DIR=${TRILINOS_DIR}/packages/thyra
 export TPETRA_DIR=${TRILINOS_DIR}/packages/tpetra
-export DREKAR_BASE_DIR=${TRILINOS_DIR}/DrekarBase
-export DREKAR_SYSTEM_TESTS_DIR=${MY_HOME}/Packages/DrekarSystemTests
-export DREKAR_DOCS_DIR=${MY_HOME}/Packages/DrekarDocuments/trunk
+export DREKAR_DIR=${TRILINOS_DIR}/DrekarBase/drekar
+export DREKAR_SYSTEM_TESTS_DIR=${MY_HOME}/DrekarSystemTests
+export DREKAR_DOCS_DIR=${MY_HOME}/DrekarDocuments/trunk
 export CHARON_DIR=${TRILINOS_DIR}/tcad-charon
-export CHARON_DATA_DIR=${TRILINOS_DIR}/charon-data
-export CHARON_OUO_DATA_DIR=${TRILINOS_DIR}/charon-ouo-data
-export DREKAR_BUILD_DIR=${MY_HOME}/Packages/build/mpi-drekar
-export PANZER_BUILD_DIR=${DREKAR_BUILD_DIR}/packages/panzer
-export CHARON_BUILD_DIR=${DREKAR_BUILD_DIR}/tcad-charon
-export FORKED_TRILINOS_DIR=${MY_HOME}/Packages/jmgateTrilinos
-export FORKED_AMESOS_DIR=${FORKED_TRILINOS_DIR}/packages/amesos
-export FORKED_EPETRA_DIR=${FORKED_TRILINOS_DIR}/packages/epetra
-export FORKED_KOKKOS_DIR=${FORKED_TRILINOS_DIR}/packages/kokkos
-export FORKED_NOX_DIR=${FORKED_TRILINOS_DIR}/packages/nox
-export FORKED_PANZER_DIR=${FORKED_TRILINOS_DIR}/packages/panzer
-export FORKED_PHALANX_DIR=${FORKED_TRILINOS_DIR}/packages/phalanx
-export FORKED_PIRO_DIR=${FORKED_TRILINOS_DIR}/packages/piro
-export FORKED_RYTHMOS_DIR=${FORKED_TRILINOS_DIR}/packages/rythmos
-export FORKED_SACADO_DIR=${FORKED_TRILINOS_DIR}/packages/sacado
-export FORKED_STK_DIR=${FORKED_TRILINOS_DIR}/packages/stk
-export FORKED_STRATIMIKOS_DIR=${FORKED_TRILINOS_DIR}/packages/stratimikos
-export FORKED_TEKO_DIR=${FORKED_TRILINOS_DIR}/packages/teko
-export FORKED_TEUCHOS_DIR=${FORKED_TRILINOS_DIR}/packages/teuchos
-export FORKED_THYRA_DIR=${FORKED_TRILINOS_DIR}/packages/thyra
-export FORKED_TPETRA_DIR=${FORKED_TRILINOS_DIR}/packages/tpetra
-export FORKED_DREKAR_BASE_DIR=${FORKED_TRILINOS_DIR}/DrekarBase
-export FORKED_CHARON_DIR=${FORKED_TRILINOS_DIR}/tcad-charon
-export FORKED_CHARON_DATA_DIR=${FORKED_TRILINOS_DIR}/charon-data
-export FORKED_CHARON_OUO_DATA_DIR=${FORKED_TRILINOS_DIR}/charon-ouo-data
-export FORKED_DREKAR_BUILD_DIR=${MY_HOME}/Packages/build/forked-mpi-drekar
-export FORKED_PANZER_BUILD_DIR=${FORKED_DREKAR_BUILD_DIR}/packages/panzer
-export FORKED_CHARON_BUILD_DIR=${FORKED_DREKAR_BUILD_DIR}/tcad-charon
+export CHARON_DATA_DIR=${MY_HOME}/charon/charon-data
+export CHARON_OUO_DATA_DIR=${MY_HOME}/charon/charon-ouo-data
+export TRILINOS_BUILD_DIR=${MY_HOME}/build/trilinos
+export TRILINOS_INSTALL_DIR=${MY_HOME}/install
+export PANZER_BUILD_DIR=${TRILINOS_BUILD_DIR}/packages/panzer
+export CHARON_BUILD_DIR=${TRILINOS_BUILD_DIR}/tcad-charon
+export DREKAR_BUILD_DIR=${TRILINOS_BUILD_DIR}/DrekarBase/drekar
+export EMPIRE_DIR=${MY_HOME}/empire/EMPIRE
+export PIC_DIR=${MY_HOME}/empire/EMPIRE-PIC
+export FLUID_DIR=${MY_HOME}/empire/EMPIRE-Fluid
+export HYBRID_DIR=${MY_HOME}/empire/EMPIRE-Hybrid
+export SPIN_DIR=${MY_HOME}/empire/SPIN
+export SCEPTXS_DIR=${MY_HOME}/empire/SCEPTXS
+export BUILD_SCRIPTS_DIR=${MY_HOME}/empire/BuildScripts
+export EMPIRE_BUILD_DIR=${MY_HOME}/build/EMPIRE
+export PIC_BUILD_DIR=${MY_HOME}/build/EMPIRE-PIC
+export FLUID_BUILD_DIR=${MY_HOME}/build/EMPIRE-Fluid
+export HYBRID_BUILD_DIR=${MY_HOME}/build/EMPIRE-Hybrid
+export SPIN_BUILD_DIR=${PIC_BUILD_DIR}/src/collision
+export SCEPTXS_BUILD_DIR=${SPIN_BUILD_DIR}/TPL/sceptxs
 
 # cd with history.
 function myCd
@@ -185,22 +276,21 @@ function gitBranchDescriptions
 # Generally useful aliases.
 alias .b="source ~/.bashrc"
 alias .bp="source ~/.bash_profile"
+alias vi=vim
 alias less="less -R"
-alias grep="grep --color"
+alias grep="grep --color --exclude-dir=doc --exclude-dir=.git"
 alias rgrep="grep -rsIn"
 alias f="find . -name"
-alias o="xdg-open"
+alias o="gio open"
 alias rm="rm -v"
 alias cd="myCd"
 alias up="myUp"
 alias back="myBack"
 alias dirs="dirs -v"
-alias cls="clear; ls"
 alias tree="tree -C --charset UTF8"
 alias ssh="ssh -Y"
 alias texdocs="cd /usr/local/texlive/2016/texmf-dist/doc"
 alias valgrind="valgrind -v --leak-check=full --suppressions=${HOME}/valgrind.supp"
-alias kraken="gitkraken --proxy-server=${http_proxy}"
 
 # Machine aliases.
 alias skybridge="ssh jmgate@skybridge.sandia.gov"
@@ -209,9 +299,13 @@ alias shiller="ssh jmgate@shiller.sandia.gov"
 alias estolad="ssh jmgate@estolad.sandia.gov"
 alias mac="ssh jmgate@s1001843.srn.sandia.gov"
 alias linux="ssh jmgate@s1002179.srn.sandia.gov"
+alias chama="ssh jmgate@chama.sandia.gov"
+alias breve="ssh jmgate@breve.sandia.gov"
+alias cortado="ssh jmgate@cortado.sandia.gov"
+alias doppio="ssh jmgate@doppio.sandia.gov"
 
-# Trilinos aliases.
-alias myhome="cd ${MY_HOME}"
+# Location aliases.
+alias home="cd ${MY_HOME}"
 alias trilinos="cd ${TRILINOS_DIR}"
 alias amesos="cd ${AMESOS_DIR}"
 alias epetra="cd ${EPETRA_DIR}"
@@ -225,46 +319,35 @@ alias sacado="cd ${SACADO_DIR}"
 alias stk="cd ${STK_DIR}"
 alias stratimikos="cd ${STRATIMIKOS_DIR}"
 alias teko="cd ${TEKO_DIR}"
+alias tempus="cd ${TEMPUS_DIR}"
 alias teuchos="cd ${TEUCHOS_DIR}"
 alias thyra="cd ${THYRA_DIR}"
 alias tpetra="cd ${TPETRA_DIR}"
-alias dbase="cd ${DREKAR_BASE_DIR}"
+alias drekar="cd ${DREKAR_DIR}"
 alias dstests="cd ${DREKAR_SYSTEM_TESTS_DIR}"
 alias ddocs="cd ${DREKAR_DOCS_DIR}"
 alias charon="cd ${CHARON_DIR}"
 alias cdata="cd ${CHARON_DATA_DIR}"
 alias codata="cd ${CHARON_OUO_DATA_DIR}"
+alias tbuild="cd ${TRILINOS_BUILD_DIR}"
 alias dbuild="cd ${DREKAR_BUILD_DIR}"
 alias pbuild="cd ${PANZER_BUILD_DIR}"
 alias cbuild="cd ${CHARON_BUILD_DIR}"
+alias ebuild="cd ${EMPIRE_BUILD_DIR}"
+alias epbuild="cd ${PIC_BUILD_DIR}"
+alias fbuild="cd ${FLUID_BUILD_DIR}"
+alias hbuild="cd ${HYBRID_BUILD_DIR}"
+alias spinbuild="cd ${SPIN_BUILD_DIR}"
+alias sbuild="cd ${SCEPTXS_BUILD_DIR}"
 alias discfe="cd ${PANZER_DIR}/disc-fe/src"
 alias dofmgr="cd ${PANZER_DIR}/dof-mgr/src"
 alias adapstk="cd ${PANZER_DIR}/adapters-stk/src"
 alias pcore="cd ${PANZER_DIR}/core/src"
-alias ftrilinos="cd ${FORKED_TRILINOS_DIR}"
-alias famesos="cd ${FORKED_AMESOS_DIR}"
-alias fepetra="cd ${FORKED_EPETRA_DIR}"
-alias fkokkos="cd ${FORKED_KOKKOS_DIR}"
-alias fnox="cd ${FORKED_NOX_DIR}"
-alias fpanzer="cd ${FORKED_PANZER_DIR}"
-alias fphalanx="cd ${FORKED_PHALANX_DIR}"
-alias fpiro="cd ${FORKED_PIRO_DIR}"
-alias frythmos="cd ${FORKED_RYTHMOS_DIR}"
-alias fsacado="cd ${FORKED_SACADO_DIR}"
-alias fstk="cd ${FORKED_STK_DIR}"
-alias fstratimikos="cd ${FORKED_STRATIMIKOS_DIR}"
-alias fteko="cd ${FORKED_TEKO_DIR}"
-alias fteuchos="cd ${FORKED_TEUCHOS_DIR}"
-alias fthyra="cd ${FORKED_THYRA_DIR}"
-alias ftpetra="cd ${FORKED_TPETRA_DIR}"
-alias fdbase="cd ${FORKED_DREKAR_BASE_DIR}"
-alias fcharon="cd ${FORKED_CHARON_DIR}"
-alias fcdata="cd ${FORKED_CHARON_DATA_DIR}"
-alias fcodata="cd ${FORKED_CHARON_OUO_DATA_DIR}"
-alias fdbuild="cd ${FORKED_DREKAR_BUILD_DIR}"
-alias fpbuild="cd ${FORKED_PANZER_BUILD_DIR}"
-alias fcbuild="cd ${FORKED_CHARON_BUILD_DIR}"
-alias fdiscfe="cd ${FORKED_PANZER_DIR}/disc-fe/src"
-alias fdofmgr="cd ${FORKED_PANZER_DIR}/dof-mgr/src"
-alias fadapstk="cd ${FORKED_PANZER_DIR}/adapters-stk/src"
-alias fpcore="cd ${FORKED_PANZER_DIR}/core/src"
+alias empire="cd ${EMPIRE_DIR}"
+alias epic="cd ${PIC_DIR}"
+alias fluid="cd ${FLUID_DIR}"
+alias hybrid="cd ${HYBRID_DIR}"
+alias spin="cd ${SPIN_DIR}"
+alias sceptxs="cd ${SCEPTXS_DIR}"
+alias bscripts="cd ${BUILD_SCRIPTS_DIR}"
+alias tribits="cd ${TRIBITS_BASE_DIR}"

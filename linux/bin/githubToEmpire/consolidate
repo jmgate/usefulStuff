@@ -1,0 +1,28 @@
+#!/bin/bash
+unit=$1
+if [[ $unit != "hour"  && \
+      $unit != "day"   && \
+      $unit != "month" && \
+      $unit != "year" ]]; then
+  echo "$1 must be either hour, day, month, or year."
+  exit 1
+fi
+if [[ $unit == "hour" ]]; then
+  timestamp=$(date -d "now - 1 hour" +%y%m%d%H)
+  newFile=sync${timestamp}.log
+elif [[ $unit == "day" ]]; then
+  timestamp=$(date -d "now - 1 day" +%y%m%d)
+  newFile=sync${timestamp}.log
+elif [[ $unit == "month" ]]; then
+  timestamp=$(date -d "now - 1 month" +%y%m)
+  newFile=sync${timestamp}.log
+elif [[ $unit == "year" ]]; then
+  timestamp=$(date -d "now - 1 year" +%y)
+  newFile=sync${timestamp}.log
+fi
+cd /home/jmgate/githubToEmpire/logs
+for file in $(ls -1t sync${timestamp}*.log); do
+  cat $file >> $newFile
+  echo "" >> $newFile
+  rm $file
+done

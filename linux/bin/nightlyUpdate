@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Trilinos
+
+# Charon
+
+# EMPIRE
+
+# Drekar
+
+# TriBITS
+cd ${TRIBITS_BASE_DIR}
+g fetch --all
+g co master
+g mg tribits/master
+g push jmgate master
+
+# Remember SVN repos

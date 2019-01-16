@@ -1,51 +1,115 @@
 [user]
-	name = Jason M. Gates
-	email = jmgate@sandia.gov
+  name = Jason M. Gates
+  email = jmgate@sandia.gov
 [color]
-	ui = true
+  ui = true
+[color "status"]
+  branch = green
 [push]
-	default = tracking
+  default = upstream
 [rerere]
-	enabled = 1
+  enabled = 1
 [diff]
-	tool = kompare
+  tool = kompare
 [difftool]
-	prompt = false
+  prompt = false
 [merge]
   tool = p4merge
   conflictstyle = diff3
-[core]
-	editor = vim
 [pull]
-	rebase = true
+  rebase = true
+[core]
+  editor = vim
+	excludesfile = /home/jmgate/.gitignore
+[fetch]
+  prune = true
 [alias]
-	co = checkout
-	br = branch
-	cob = checkout -b
-	ci = commit
-	st = status
-  rb = rebase
-  mg = merge
+  rv = revert
+  re = remote
+  cl = "!f() \
+    { \
+      if which removeWarning &> /dev/null; then \
+        git clone $@ &> tmpCloneResults; \
+        removeWarning tmpCloneResults; \
+        cat tmpCloneResults; \
+        rm tmpCloneResults > /dev/null; \
+      else \
+        git clone $@; \
+      fi; \
+    }; f"
+  cp = cherry-pick -x
+  f = "!f() \
+    { \
+      if which removeWarning &> /dev/null; then \
+        git fetch $@ &> tmpFetchResults; \
+        removeWarning tmpFetchResults; \
+        cat tmpFetchResults; \
+        rm tmpFetchResults > /dev/null; \
+      else \
+        git fetch $@; \
+      fi; \
+    }; f"
+  p = "!f() \
+    { \
+      if which removeWarning &> /dev/null; then \
+        git push $@ &> tmpPushResults; \
+        removeWarning tmpPushResults; \
+        cat tmpPushResults; \
+        rm tmpPushResults > /dev/null; \
+      else \
+        git push $@; \
+      fi; \
+    }; f"
+  co = checkout
+  checkout-if-not-on = "!f() \
+    { \
+      if [[ \"$(git rev-parse --abbrev-ref HEAD)\" != \"$1\" ]]; then \
+        git checkout $1; \
+      fi \
+    }; f"
+  cob = checkout -b
+  br = branch
+  brd = "!gitBranchDescriptions"
+  ci = commit
+  st = status
+  rb = !git branch beforeRebase-$(date +%y%m%d%H%M%S)-$(git rev-parse --abbrev-ref HEAD) && git rebase
+  mg = !git branch beforeMerge-$(date +%y%m%d%H%M%S)-$(git rev-parse --abbrev-ref HEAD) && git merge
+  pl = "!f() \
+    { \
+      git branch beforePull-$(date +%y%m%d%H%M%S)-$(git rev-parse --abbrev-ref HEAD); \
+      if which removeWarning &> /dev/null; then \
+        git pull $@ &> tmpPullResults; \
+        removeWarning tmpPullResults; \
+        cat tmpPullResults; \
+        rm tmpPullResults > /dev/null; \
+      else \
+        git pull $@; \
+      fi; \
+    }; f"
+  rs = !git branch beforeReset-$(date +%y%m%d%H%M%S)-$(git rev-parse --abbrev-ref HEAD) && git reset
+  amend = !git branch beforeAmend-$(date +%y%m%d%H%M%S)-$(git rev-parse --abbrev-ref HEAD) && git commit -a --amend
   stage = add
-	unstage = reset HEAD --
-	discard = checkout --
+  unstage = reset HEAD --
+  discard = checkout --
   discardall = checkout -- :/
-	ca = !git add -A && git commit
-	cm = !git add -A && git commit -m
-	save = !git add -A && git commit -m "SAVEPOINT"
-	restore = reset HEAD~1 --mixed
-	wip = commit -am "WIP"
-	amend = commit -a --amend
-	wipe = "!f() { git add -A && git commit -qm \"WIPE SAVEPOINT\" && git reset HEAD~1 --hard; }; f"
-	pl = log --decorate --graph
-	pl1 = log --decorate --graph --oneline
-	pla = log --decorate --graph --all
-	pla1 = log --decorate --graph --all --oneline
-  last = "!f() { git log --decorate --graph -${1-1} HEAD; }; f"
-	dt = difftool --dir-diff
+  ca = !git add -A && git commit
+  cm = !git add -A && git commit -m
+  save = !git add -A && git commit -m "SAVEPOINT"
+  restore = reset HEAD~1 --mixed
+  wipe = "!f() \
+    { \
+      git add -A; \
+      git commit -qm \"WIPE SAVEPOINT\"; \
+      git reset HEAD~1 --hard; \
+    }; f"
+  l = log --decorate --graph
+  l1 = log --decorate --graph --oneline
+  la = log --decorate --graph --all
+  la1 = log --decorate --graph --all --oneline
+  dt = difftool --dir-diff
   mt = mergetool
-	d1 = !git diff $1^..$1
-	dt1 = !git difftool --dir-diff $1^..$1
+  d1 = !git diff $1^..$1
+  dt1 = !git difftool --dir-diff $1^..$1
   files = diff-tree --no-commit-id --name-only -r
   sl = stash list
   ss = stash save
@@ -56,5 +120,85 @@
   bg = bisect good
   bb = bisect bad
   be = bisect reset bisect/bad
-	bclean = "!f() { git branch --merged ${1-develop} | grep -v " ${1-develop}$" | xargs -r git branch -d; }; f"
-	bdone = "!f() { git checkout ${1-develop} && git pull --rebase --prune && git bclean ${1-develop}; }; f"
+  be = "!f() \
+    { \
+      git bisect reset bisect/bad; \
+      tag=\"firstBadCommit-$(date +%y%m%d%H%M%S)\"; \
+      git tag $tag; \
+      git checkout $tag; \
+    }; f"
+  conflicts = ![[ -n $(git ls-files --unmerged) ]]
+  list-conflicts = "!cd ${GIT_PREFIX:-.}; git ls-files --unmerged | cut -f2 | sort -u"
+  oldest-ancestor = !bash -c 'diff -u <(git rev-list --first-parent "${1:-master}") <(git rev-list --first-parent "${2:-HEAD}") | sed -ne \"s/^ //p\" | head -1' -
+  rebase-onto = !bash -c 'git branch $4 $2 && git rebase --onto $3 $(git oldest-ancestor $1 $4) $4' -
+  up = "!f() \
+    { \
+      pullFromRemote=\"$1\"; \
+      pullFromBranch=\"$2\"; \
+      pushToRemote=\"jmgate\"; \
+      if [[ $# -ge 3 ]]; then \
+        pushToRemote=\"$3\"; \
+      fi; \
+      pushToBranch=\"$pullFromBranch\"; \
+      if [[ $# -ge 4 ]]; then \
+        pushToBranch=\"$4\"; \
+      fi; \
+      echo -e \"\\e[1mUpdating local ${pushToBranch} with changes from ${pullFromRemote}/${pullFromBranch}...\\e[0m\"; \
+      git f ${pullFromRemote} ${pullFromBranch}; \
+      echo \"Updating ${pushToBranch}...\"; \
+      ref=$(git rev-parse --abbrev-ref HEAD); \
+      git checkout-if-not-on ${pushToBranch}; \
+      echo \"Merging with ${pullFromRemote}/${pullFromBranch}...\"; \
+      git mg --ff-only ${pullFromRemote}/${pullFromBranch} &> tmpMergeResults; \
+      cat tmpMergeResults; \
+      if grep \"Already up-to-date.\" tmpMergeResults > /dev/null; then \
+        git branch -d $(git branch | grep \"beforeMerge-.*-${pushToBranch}\" | tail -n 1) > /dev/null; \
+      else \
+        echo \"Pushing to ${pushToRemote}...\"; \
+        git p ${pushToRemote} ${pushToBranch}; \
+      fi; \
+      rm tmpMergeResults; \
+      git checkout-if-not-on ${ref}; \
+    }; f"
+  finish = "!f() \
+    { \
+      branch=\"$1\"; \
+      ref=$(git rev-parse --abbrev-ref HEAD); \
+      git checkout-if-not-on ${branch} &> /dev/null; \
+      info=$(git status --short --branch); \
+      if [[ \"${info}\" == *\"...\"* ]]; then \
+        remote=$(git branch --verbose --verbose | grep \"${branch}\" | awk -F[ '{print $2}' | awk -F/ '{print $1}'); \
+        if [[ $(git ls-remote --heads ${remote} ${branch} |& grep \"refs/heads/${branch}\" | wc -l) -eq 1 ]]; then \
+          git p --delete ${remote} ${branch}; \
+        fi; \
+      fi; \
+      git checkout-if-not-on ${ref} &> /dev/null; \
+      if [[ \"${ref}\" == \"${branch}\" ]]; then \
+        git checkout $(git rev-parse HEAD) &> /dev/null; \
+      fi; \
+      for b in $(git branch | grep \"${branch}\"); do \
+        git branch -D $b; \
+      done; \
+    }; f"
+  clean-old-branches = "!f() \
+    { \
+      for b in $(git branch | grep -E \"before(Amend|Merge|Pull|Rebase|Reset)-.*-(master|develop)\"); do \
+        timestamp=$(echo $b | awk -F- '{print $2}'); \
+        year=${timestamp:0:2}; \
+        month=${timestamp:2:2}; \
+        day=${timestamp:4:2}; \
+        secondsSinceEpoch=$(date -d ${year}-${month}-${day} +%s); \
+        now=$(date +%s); \
+        diff=$(( now - secondsSinceEpoch )); \
+        oneMonth=$(( 60 * 60 * 24 * 30 )); \
+        if [[ ${diff} -gt ${oneMonth} ]]; then \
+          git branch -D $b; \
+        fi; \
+      done; \
+    }; f"
+  bl = blame
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+  required = true

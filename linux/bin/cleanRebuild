@@ -1,17 +1,17 @@
 #!/bin/bash
 banner "Cleaning your install..."
-rm -rfv ${DREKAR_BUILD_DIR}/../../install/*
+rm -rfv ${TRILINOS_INSTALL_DIR}/*
 banner "Cleaning your build..."
-rm -rfv ${DREKAR_BUILD_DIR}/*
+rm -rfv ${TRILINOS_BUILD_DIR}/*
 banner "Configuring..."
-cd ${DREKAR_BUILD_DIR}                                                     && \
-  ../configureDrekarInitial | logit config
+cd ${TRILINOS_BUILD_DIR}                                                   && \
+  ../configureTrilinosInitial |& logit config
 banner "Building..."
-cd ${DREKAR_BUILD_DIR}                                                     && \
+cd ${TRILINOS_BUILD_DIR}                                                   && \
   makeit                                                                   && \
   banner "Installing..."                                                   && \
   make install                                                             && \
   banner "Configuring again..."                                            && \
-  ../configureDrekar | logit config                                        && \
+  ../configureTrilinos |& logit config                                     && \
   banner "Building again..."                                               && \
   makeit

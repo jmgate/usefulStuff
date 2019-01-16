@@ -592,7 +592,7 @@ __git_complete_remote_or_refspec ()
 			__gitcomp_nl "$(__git_refs)" "$pfx" "$cur_"
 		fi
 		;;
-	push)
+	push|p|up)
 		if [ $lhs = 1 ]; then
 			__gitcomp_nl "$(__git_refs)" "$pfx" "$cur_"
 		else

@@ -1,3 +1,90 @@
+" Setting up Vundle.
+set nocompatible " be iMproved, required
+filetype off     " required
+
+" Set the runtime path to include Vundle and initialize.
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+" Alternatively, pass a path where Vundle should install plugins.
+"call vundle#begin('~/some/path/here')
+
+" Let Vundle manage Vundle, required
+Plugin 'VundleVim/Vundle.vim'
+
+" The following are examples of different formats supported.
+" Keep Plugin commands between vundle#begin/end.
+" Plugin on GitHub repo:
+"   Plugin 'tpope/vim-fugitive'
+" Plugin from http://vim-scripts.org/vim/scripts.html:
+"   Plugin 'L9'
+" Git plugin not hosted on GitHub:
+"   Plugin 'git://git.wincent.com/command-t.git'
+" Git repos on your local machine (i.e., when working on your own plugin):
+"   Plugin 'file:///home/gmarik/path/to/plugin'
+" The sparkup vim script is in a subdirectory of this repo called vim.
+" Pass the path to set the runtimepath properly.
+"   Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
+" Install L9 and avoid a naming conflict if you've already installed a
+" different version somewhere else.
+"   Plugin 'ascenator/L9', {'name': 'newL9'}
+" Install YouCompleteMe
+"Plugin 'Valloric/YouCompleteMe'
+" Install vim-airline
+Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
+" Install fugitive
+Plugin 'tpope/vim-fugitive'
+" Install Syntastic
+"Plugin 'scrooloose/syntastic'
+
+" All of your Plugins must be added before the following line.
+call vundle#end()         " required
+filetype plugin indent on " required
+" To ignore plugin indent changes, instead use:
+"filetype plugin on
+
+" Brief help:
+" :PluginList - lists configured plugins
+" :PluginInstall - installs plugins; append `!` to update or just :PluginUpdate
+" :PluginSearch foo - searches for foo; append `!` to refresh local cache
+" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
+
+" See :h vundle for more details or wiki for FAQ.
+" Put your non-Plugin stuff after this line.
+
+" Set up YouCompleteMe.
+"let g:ycm_server_python_interpreter = '/usr/bin/python'
+"let g:ycm_global_ycm_extra_conf = '~/.ycm_extra_conf.py'
+"let g:ycm_enable_diagnostic_signs = 0
+"let g:ycm_enable_diagnostic_highlighting = 0
+"let g:ycm_echo_current_diagnostic = 0
+"let g:ycm_complete_in_comments = 1
+"let g:ycm_collect_identifiers_from_comments_and_strings = 1
+"let g:ycm_seed_identifiers_with_syntax = 1
+"let g:ycm_confirm_extra_conf = 0
+
+" Set up vim-airline.
+let g:airline_theme = 'luna'
+let g:airline_powerline_fonts = 1
+
+" Set up Syntastic
+"let g:syntastic_always_populate_loc_list = 1
+"let g:syntastic_auto_loc_list = 1
+"let g:syntastic_check_on_open = 1
+"let g:syntastic_check_on_wq = 0
+
+" Activate syntax highlighting
+syntax on
+
+" Make backspace work as normal.
+set backspace=indent,eol,start
+
+" Tell vim to hide instead of close buffers.
+set hidden
+
+" Highlight all search matches.
+set hlsearch
+
 " Set the number of visual spaces per tab.
 set tabstop=2
 
@@ -128,9 +215,9 @@ function! Doxygen()
   let end = 130 - tw - 1
   let indent = (col(".") - 1)
   let reps = tw - indent - 1
-  .s/\(\S.*\)/\/**\r\r\r\r\r\r\r\r\r\r\r\r\r\1/
+  .s/\(\S.*\)/\/**\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\1/
   .s/^/\=("".repeat(" ", indent))/
-  normal 12k
+  normal 14k
   .s/^.*$/ *  \\brief Description./
   .s/$/\=("".repeat(" ", reps - 23))/
   .s/$/\/\/ JMG:  Fill this out./
@@ -145,6 +232,18 @@ function! Doxygen()
   normal j
   .s/^.*$/ *  Detailed description./
   .s/$/\=("".repeat(" ", reps - 25))/
+  .s/$/\/\//
+  .s/$/\=("".repeat(" ", end))/
+  .s/^/\=("".repeat(" ", indent))/
+  normal j
+  .s/^.*$/ */
+  .s/$/\=("".repeat(" ", reps - 2))/
+  .s/$/\/\//
+  .s/$/\=("".repeat(" ", end))/
+  .s/^/\=("".repeat(" ", indent))/
+  normal j
+  .s/^.*$/ *  \\todo Fill this out./
+  .s/$/\=("".repeat(" ", reps - 24))/
   .s/$/\/\//
   .s/$/\=("".repeat(" ", end))/
   .s/^/\=("".repeat(" ", indent))/
@@ -199,9 +298,31 @@ function! Doxygen()
   normal j
   .s/^.*$/ *\//
   .s/^/\=("".repeat(" ", indent))/
-  normal 10k^4w
+  normal 14k^4w
 endfunction
 nnoremap <Leader>d :call Doxygen()<CR>:silent! call repeat#set("\<Leader>d", -1)<CR>
+
+" Insert a Doxygen template.
+function! DoxygenBrief()
+  normal ^
+  let tw = 82
+  let end = 130 - tw - 1
+  let indent = (col(".") - 1)
+  let reps = tw - indent - 1
+  .s/\(\S.*\)/\/**\r\r\1/
+  .s/^/\=("".repeat(" ", indent))/
+  normal k
+  .s/^.*$/ *  \\brief Description./
+  .s/$/\=("".repeat(" ", reps - 23))/
+  .s/$/\/\/ JMG:  Fill this out./
+  .s/$/\=("".repeat(" ", end - 21))/
+  .s/^/\=("".repeat(" ", indent))/
+  normal j
+  .s/^.*$/ *\//
+  .s/^/\=("".repeat(" ", indent))/
+  normal k^3w
+endfunction
+nnoremap <Leader>db :call DoxygenBrief()<CR>:silent! call repeat#set("\<Leader>db", -1)<CR>
 
 " Comment line break.
 function! CommentLineBreak()
@@ -234,7 +355,7 @@ nnoremap <Leader>n :call JoinCommentLines()<CR>:silent! call repeat#set("\<Leade
 nnoremap <Leader>x :call JoinCommentLines()<CR>:call CommentLineBreak()<CR>:silent! call repeat#set("\<Leader>x", -1)<CR>
 
 " Insert a heading comment block.
-function! InsertHeading()
+function! InsertHeading(str)
   normal ^
   let indent = (col(".") - 1)
   let reps   = (79 - indent)
@@ -252,22 +373,30 @@ function! InsertHeading()
   .s/^.*$/\=("".repeat("\/", reps))/
   .s/^/\=("".repeat(" ", indent))/
   normal 2k
-  .s/^.*$/\/\/  something/
+  exe '.s/^.*$/\/\/  ' . a:str . '/'
   .s/^/\=("".repeat(" ", indent))/
   normal ^w
 endfunction
-nnoremap <Leader>h :call InsertHeading()<CR>:silent! call repeat#set("\<Leader>h", -1)<CR>
+nnoremap <Leader>h :call InsertHeading('something')<CR>:silent! call repeat#set("\<Leader>h", -1)<CR>
+nnoremap <Leader>hc :call InsertHeading('Constructor')<CR>:silent! call repeat#set("\<Leader>hc", -1)<CR>
+nnoremap <Leader>hp :call InsertHeading('postRegistrationSetup()')<CR>:silent! call repeat#set("\<Leader>hp", -1)<CR>
+nnoremap <Leader>he :call InsertHeading('evaluateFields()')<CR>:silent! call repeat#set("\<Leader>he", -1)<CR>
+nnoremap <Leader>hv :call InsertHeading('getValidParameters()')<CR>:silent! call repeat#set("\<Leader>hv", -1)<CR>
 
 " Insert a Teuchos::FancyOStream object.
 function! InsertFancyOStream()
   normal ^
-  .s/\(.*\)/\r\r\r\1/
-  normal 3k
+  .s/\(.*\)/\r\r\r\r\r\1/
+  normal 5k
   .s/^.*$/Teuchos::FancyOStream fout(Teuchos::rcpFromRef(std::cout));/
   normal j
   .s/^.*$/fout.setShowProcRank(true);/
   normal j
   .s/^.*$/fout.setOutputToRootOnly(-1);/
+  normal j
+  .s/^.*$/using std::endl;/
+  normal j
+  .s/^.*$/fout << "ETWAS:" << endl;/
   normal j^
 endfunction
 nnoremap <Leader>t :call InsertFancyOStream()<CR>
@@ -277,7 +406,7 @@ function! InsertPrintVector()
   normal ^
   .s/\(.*\)/\r\r\r\r\r\r\r\r\1/
   normal 8k
-  .s/^.*$/fout << "ETWAS:  urgh = {";/
+  .s/^.*$/fout << "urgh = {";/
   normal j
   .s/^.*$/for (std::size_t i(0); i < urgh.size(); ++i)/
   normal j
@@ -304,6 +433,14 @@ nnoremap <Leader>/ :call InsertString('//')<CR>:silent! call repeat#set("\<Leade
 nnoremap <Leader>" :call InsertString('"')<CR>:silent! call repeat#set("\<Leader>\"", -1)<CR>
 nnoremap <Leader># :call InsertString('#')<CR>:silent! call repeat#set("\<Leader>\#", -1)<CR>
 nnoremap <Leader>% :call InsertString('%')<CR>:silent! call repeat#set("\<Leader>\%", -1)<CR>
+
+" Comment out word.
+function! CommentWord()
+  normal i/* 
+  normal 2w
+  normal i */
+endfunction
+nnoremap <Leader>w :call CommentWord()<CR>:silent! call repeat#set("\<Leader>\w", -1)<CR>
 
 " Highlight aspects of poor coding style.  Toggle on and off with \p.
 let s:poorStyleActivated = 1

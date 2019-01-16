@@ -1,0 +1,79 @@
+#!/bin/bash
+
+###############################################################################
+#
+#  usage()
+#
+#  Print the usage information.
+#
+###############################################################################
+usage()
+{
+  echo "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓"
+  echo "┃ This script fires off a quick email to jmgate@sandia.gov.                   ┃"
+  echo "┠─────────────────────────────────────────────────────────────────────────────┨"
+  echo "┃ Usage:  emailMe [options] subject [body]                                    ┃"
+  echo "┃                                                                             ┃"
+  echo "┃ Note:  If no body is included, the subject will be used as the body of the  ┃"
+  echo "┃        email.                                                               ┃"
+  echo "┃                                                                             ┃"
+  echo "┃ Options:  -h,--help:    Display this usage information.                     ┃"
+  echo "┃           -e,--email:   Email address to send to.  Defaults to              ┃"
+  echo "┃                         jmgate@sandia.gov.                                  ┃"
+  echo "┃           -a,--attach:  A file to attach.                                   ┃"
+  echo "┃                                                                             ┃"
+  echo "┃ Example:  emailMe -e someone@somewhere.com -a something.txt \               ┃"
+  echo "┃             \"Subject Line\" \"This is the body of the email.\"                 ┃"
+  echo "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛"
+} # end of usage()
+
+###############################################################################
+#
+#  emailMe
+#
+###############################################################################
+
+# Get and validate the command line arugments.
+address="jmgate@sandia.gov"
+attach=""
+POSITIONAL=()
+while [[ $# -gt 0 ]]; do
+  key="$1"
+  case $key in
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    -e|--email)
+      address="$2"
+      shift 2
+      ;;
+    -a|--attach)
+      attach="$2"
+      shift 2
+      ;;
+    *)
+      POSITIONAL+=("$key")
+      shift
+      ;;
+  esac
+done
+set -- "${POSITIONAL[@]}"
+if [[ $# -eq 0 ]]; then
+  usage
+  echo "You must specify a subject line."
+  exit 1
+fi
+subject="$1"
+shift
+body="$*"
+if [[ "$body" == "" ]]; then
+  body="$subject"
+fi
+
+# Send the email.
+if [[ "$attach" == "" ]]; then
+  echo "$body" | mailx -s "$subject" "$address"
+else
+  echo "$body" | mailx -s "$subject" -a "$attach" "$address"
+fi

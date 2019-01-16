@@ -116,7 +116,8 @@ beforeReboot()
     # The user then needs to download the appropriate driver installation
     # script and put it in their Downloads directory.
     banner "Place the latest driver installation script in $downloads/."
-    xdg-open http://www.nvidia.com/Download/index.aspx?lang=en-us &
+    su -c "gio open http://www.nvidia.com/Download/index.aspx?lang=en-us &"   \
+      $(logname)
     sleep 2
     read -r -n 1 -s -p "Once that's done, press any key to continue."
     echo
@@ -172,10 +173,22 @@ afterReboot()
 #    --force-update
   $(ls -t $downloads/NVIDIA* | head -n 1)
 
+  # Before we create the new initramfs, we need to clean up any old backups to
+  # make sure we don't run out of disk space.  We'll leave the last two backups
+  # in place, just in case.
+  banner "Removing old backup initramfs."
+  backups=/tmp/initramfsBackups
+  ls -rt1 /boot/initramfs-*-backup*.img > $backups
+  num=$(cat $backups | wc -l)
+  for b in $(cat $backups | head -n $((num - 2))); do
+    rm -fv $b
+  done
+  rm $backups
+
   # Next we'll back up the old initramfs and create a new one.
   banner "Backing up the old initramfs."
   mv /boot/initramfs-$(uname -r).img \
-    /boot/initramfs-$(uname -r)-backup$(date +%m%d%y%H%M%N).img
+    /boot/initramfs-$(uname -r)-backup$(date +%y%m%d%H%M%S).img
   banner "Creating the new initramfs."
   dracut /boot/initramfs-$(uname -r).img $(uname -r)
 
@@ -201,7 +214,7 @@ if [ -f $fileName ]; then
   # Remove what we added to the user's .bashrc file to restart this script
   # after the reboot.
   numRows=$(cat $home/.bashrc | wc -l)
-  cp $home/.bashrc $home/.bashrc.backup$(date +%m%d%y%H%M%N)
+  cp $home/.bashrc $home/.bashrc.backup$(date +%y%m%d%H%M%N)
   head -n $(($numRows - 2)) $home/.bashrc > $home/.bashrcNew
   mv $home/.bashrcNew $home/.bashrc
   chown $(logname):$(logname) $home/.bashrc

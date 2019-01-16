@@ -1,0 +1,6 @@
+#!/bin/bash
+#vi -e - $@ << @@@
+#g/Legal Notice Reminder/.-1,/DISCONTINUE all efforts/.+1d
+#wq
+#@@@
+sed -i '/Legal Notice Reminder/,/DISCONTINUE all efforts/d' $1

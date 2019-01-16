@@ -1,0 +1,161 @@
+#!/bin/bash
+
+# TODO:
+# Output filename command line argument.
+# Aggregate times instead of num_calls.
+# Aggregate both and sort by either via command line argument.
+
+# Usage information.
+usage()
+{
+  echo "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓"
+  echo "┃ This script will determine how many times the various PHX::Evaluators are   ┃"
+  echo "┃ used in whatever code you've run.                                           ┃"
+  echo "┠─────────────────────────────────────────────────────────────────────────────┨"
+  echo "┃ Usage:  eveluatorUsage logFile                                              ┃"
+  echo "┃   logFile:  A log file containing results from a run of ctest with the      ┃"
+  echo "┃             TimeMonitor turned on.                                          ┃"
+  echo "┃ Example:                                                                    ┃"
+  echo "┃   $ cd /path/to/build/dir/DrekarBase/drekar/Testing/Temporary               ┃"
+  echo "┃   $ evaluatorUsage LastTest.log                                             ┃"
+  echo "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛"
+}
+
+# Validate the command line argument.
+if [[ $# -ne 1 ]]; then
+  usage
+  exit 1
+fi
+if [ ! -f $1 ]; then
+  usage
+  echo "The logFile you provided ($1) is not a regular file."
+  exit 2
+fi
+inputFile=$1
+if ! grep "TimeMonitor" $inputFile > /dev/null; then
+  usage
+  echo "The logFile you provided ($inputFile) does not contain any TimeMonitor results."
+  exit 3
+fi
+
+# Create a temporary working directory.
+tmp=/tmp/evaluatorUsage/
+mkdir -p $tmp
+
+# Clean up before exiting.
+cleanUp()
+{
+  rm -rf $tmp
+}
+
+# Clear the current line of output in the terminal.
+clearLine()
+{
+  echo -en "\e[2K\r"
+}
+
+# Need to modify to include timings and give the option to sort on that.
+
+# Create some variables to refer to the various files we'll be creating and
+# working with.
+ctest=$tmp/ctest
+timeMonitor=$tmp/timeMonitor
+p1=$tmp/p1
+p4=$tmp/p4
+p4Summed=$tmp/p4Summed
+all=$tmp/all
+evaluatorUsage=$tmp/evaluatorUsage
+results=$tmp/results
+
+# Copy the input file to our temporary working directory.
+cp $inputFile $ctest
+
+# Strip all "p=0 | " out of the beginnings of lines.
+#echo -n "Stripping out FancyOStream prefixes..."
+sed -i "s/^p=0 | //" $ctest 
+
+# Grab all the lines between "TimeMonitor results" and the next line of all
+# equal signs.
+#clearLine
+#echo -n "Grabbing the TimeMonitor results..."
+sed -n '/TimeMonitor results/,/^=\+=$/p' $ctest > $timeMonitor
+
+# Remove all lines containing "TimeMonitor", "Timer Name", all equal signs or
+# hyphens, or nothing at all.
+#clearLine
+#echo -n "Removing unnecessary lines..."
+sed -i '/TimeMonitor/d' $timeMonitor 
+sed -i '/Timer Name/d' $timeMonitor 
+sed -i '/^-\+-$/d' $timeMonitor 
+sed -i '/^=\+=$/d' $timeMonitor 
+sed -i '/^\s*$/d' $timeMonitor 
+
+# Get rid of all lines that don't correspond to Phalanx Evaluators.
+sed -i '/^Phalanx/!d' $timeMonitor
+
+# Grab the lines with one processor and reformat them such that it's:
+#   Evaluator Name | num
+# where "num" represents the number of calls of that Evaluator.
+#clearLine
+#echo -n "Grabbing the one-processor results..."
+cp $timeMonitor $p1
+sed -i "/.* .* ([0-9]\+.*) \+.* ([0-9]\+.*) \+.* ([0-9]\+.*) \+.* ([0-9]\+.*)/d" $p1
+sed -i "s/\([^\s]*\)\s\+[0-9]\+\..* (\([0-9]\+\))/\1|\2/" $p1
+sed -i "s/\s\+|/|/" $p1 
+sed -i "s/\s\+$//" $p1 
+
+# Grab the lines with four processors and reformat them such that it's:
+#   Evaluator Name | num | num | num | num
+# where each "num" represents the number of calls of that Evaluator on that
+# processor.
+#clearLine
+#echo -n "Grabbing the four-processor results..."
+sed -n "s/\([^\s]*\)\s\+[0-9]\+\..* (\([0-9]\+.*\))\s\+[0-9]\+\..* (\([0-9]\+.*\))\s\+[0-9]\+\..* (\([0-9]\+.*\))\s\+[0-9]\+\..* (\([0-9]\+.*\))/\1|\2|\3|\4|\5/p" $timeMonitor > $p4
+sed -i "s/\s\+|/|/" $p4 
+sed -i "s/\s\+$//" $p4
+
+# Sum the number of Evaluator calls in the four processor cases.
+awk '
+  BEGIN {
+    FS = "|"
+  } {
+    print $1 "|" $2 + $3 + $4 + $5
+  }' $p4 > $p4Summed
+
+# Combine the one-processor and summed four-processor results.
+cat $p1 $p4Summed > $all
+
+# Sum the number of Evaluator calls for all lines with the same Evalutor name.
+#clearLine
+#echo -n "Aggregating the results..."
+awk '
+  BEGIN {
+    FS = "|"
+  } {
+    if ($1 in arr)
+    {
+      arr[$1] += $2
+    }
+    else
+    {
+      arr[$1] = $2
+    }
+  } END {
+    max = asort(arr, arr2)
+    width = length(arr2[max])
+    for (elem in arr)
+      printf "%*d | %s\n", width, arr[elem], elem
+  }' $all > $evaluatorUsage
+
+# Sort the list by the total number of calls in descending order.
+sort -rn $evaluatorUsage > $results
+
+# Remove some text that is unnecessary at this point.
+sed -i "s/Phalanx: Evaluator [0-9]\+: //" $results
+
+# Output the results, clean up, and exit.
+#clearLine
+#echo
+cat $results
+cleanUp
+exit 0

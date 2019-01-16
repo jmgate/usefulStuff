@@ -1,0 +1,3 @@
+#!/bin/bash
+script --return -c "make -j 24 install" /dev/null |& logit install
+sed -i "s/\r//" $(latest make)

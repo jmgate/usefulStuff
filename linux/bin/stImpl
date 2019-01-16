@@ -125,7 +125,7 @@ statusRepo()
     if [ "$2" == "DrekarSystemTests" ] || [ "$2" == "DrekarDocuments" ]; then
       svn status
     else
-      git status
+      git st
     fi
   elif [[ $response =~ ([Nn][Oo]|[Nn])$ ]]; then
     banner "Skipping $2"

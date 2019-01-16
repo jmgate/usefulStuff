@@ -1,3 +1,5 @@
 #!/bin/bash
-unbuffer gitSyncImpl $@ |& logit gitSync
+echo "Use updateWorkspace."
+exit 1
+script --return -c "gitSyncImpl $@" /dev/null |& logit gitSync
 sed -i "s/^.*//" $(latest gitSync)

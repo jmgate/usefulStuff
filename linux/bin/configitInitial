@@ -1,0 +1,4 @@
+#!/bin/bash
+old=${PWD}
+cd ${TRILINOS_BUILD_DIR} && script --return -c "../configureTrilinosInitial" /dev/null |& logit configInitial
+cd ${old}

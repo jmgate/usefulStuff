@@ -125,7 +125,7 @@ pullRepo()
     if [ "$2" == "DrekarSystemTests" ] || [ "$2" == "DrekarDocuments" ]; then
       svn update
     else
-      git pull
+      git pl
     fi
   elif [[ $response =~ ([Nn][Oo]|[Nn])$ ]]; then
     banner "Skipping $2"

@@ -1,0 +1,77 @@
+#!/usr/bin/env python
+import fileinput
+import pprint
+import re
+import subprocess
+from sortedcontainers import SortedDict
+warnings = {}
+for line in fileinput.input():
+    line = line[8:]
+    if "-Wunused-parameter" in line:
+        pieces = line.split(":")
+        filename = pieces[0]
+        row = int(pieces[1])
+        col = int(pieces[2])
+        rest = pieces[-1]
+        parameter = re.search("‘(.*)’", rest).group(1)[8:-6]
+        if filename in warnings:
+            if row in warnings[filename]:
+                warnings[filename][row][col] = parameter
+            else:
+                warnings[filename][row] = SortedDict({col: parameter})
+        else:
+            warnings[filename] = {row: SortedDict({col: parameter})}
+#pp = pprint.PrettyPrinter(indent=4, compact=True)
+#pp.pprint(warnings)
+for (filename, data) in warnings.items():
+    lineNumber = 1
+    for line in fileinput.input(filename, inplace=True):
+#    for line in fileinput.input(filename):
+        if lineNumber in data:
+            for (row, stuff) in data.items():
+                if lineNumber == row:
+#                    start = [0]
+#                    for col, parameter in stuff.items():
+#                        print(line[start[-1]:col - 1] + "/* " + parameter + " */", end="")
+#                        start.append(col - 1 + len(parameter))
+#                    print(line[start[-1]:], end="")
+#                    print(line)
+                    for (i, (col, parameter)) in enumerate(stuff.items()):
+#                        print(i, col, parameter)
+                        col += i * 6
+#                        print("start = line.rfind(" + parameter + ", 0, " + str(col + len(parameter)) + ")")
+                        start = line.rfind(parameter, 0, col + len(parameter))
+#                        print(start)
+#                        print("line = line[:" + str(start) + "] + \"/* \" + line[" + str(start) + ":]")
+                        if line[start - 1] == "*":
+                            line = line[:start] + " /* " + line[start:]
+                        else:
+                            line = line[:start] + "/* " + line[start:]
+#                        print(line)
+#                        print("stop = re.search(\"[,\s\)]\", line[" + str(col + 3) + ":]).start() + " + str(col + 3))
+#                        stop = re.search("[,\s\)]", line[col + 3:]).start() + col + 3
+                        stop = start + len(parameter) + 3
+#                        print(stop)
+#                        print("line = line[:" + str(stop) + "] + \" */\" + line[" + str(stop) + ":]")
+                        line = line[:stop] + " */" + line[stop:]
+#                        print(line)
+                    print(line, end="")
+        else:
+            print(line, end="")
+        lineNumber += 1
+
+# Need to start a reverse search starting a col to find where parameter shows
+# up in the original line.  In cases with
+#   Type param = defaultValue
+# col points to the start of defaultValue instead of to the start of param.
+# Reverse search till you find param.  Forward search until you find ",", " ",
+# ")", or the end of the line.
+
+# Apparently it should be
+#   Type /* param */ = defaultValue
+
+# What about when Type param = defaultValue spans two lines?  col points to
+# defaultValue, but the first comment mark needs to be inserted in the prior
+# line.
+
+# If * immediately before param, insert space before comment start.
