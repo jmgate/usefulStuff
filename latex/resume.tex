@@ -1,19 +1,24 @@
 \documentclass[margin,line,pifont,palatino,10pt]{res}
 \usepackage{fancyhdr}
 \usepackage{multicol}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    urlcolor=blue
+}
 
 \oddsidemargin -.5in
 \evensidemargin -.5in
 \topmargin -.5in
 \textwidth=6.0in
-\textheight=10.25in
+\textheight=9.5in
 \itemsep=0in
 \parsep=0in
 
 \pagestyle{fancy}
 \lhead{}
 \chead{}
-\rfoot{Jason M. Gates page \thepage\ of 4}
+\rfoot{Jason M. Gates, page \thepage\ of 8}
 \lfoot{}
 \cfoot{}
 \rhead{}
@@ -28,11 +33,41 @@
 \name{Jason M. Gates \vspace*{.05in}}
 
 \begin{resume}
+
+
+
+
+
 \section{\sc Contact Information}
 2324 Punta de Vista Pl NE
 \hfill \texttt{\small jason.m.gates@gmail.com}\\
 Albuquerque, NM 87112
 \hfill (832) 683-7362
+
+
+
+
+
+
+\section{\sc Seeking}
+A senior DevOps lead position in which I can both grow the breadth of my DevOps experience, as well as my project management and team leadership expertise.
+
+
+
+
+
+
+\vspace{1.5mm}
+\section{\sc Clearance}
+DOE Q\hfill July, 2018 -- Present
+
+DOD TS/SCI\hfill May, 2014 -- June, 2016\\
+\emph{Deactivated after leaving Northrop Grumman Corporation}
+
+
+
+
+
 
 \vspace{1.5mm}
 \section{\sc Education}
@@ -49,22 +84,30 @@ B.S. in Applied Mathematics\\
 B.A. in German\\
 Graduation: May, 2009; GPA: 3.916
 
-\vspace{1.5mm}
-\section{\sc Clearance}
-TS/SCI based on a SSBI on 5/9/2014, with a favorable CI polygraph on 10/22/2014.\\
-Deactivated after leaving Northrop Grumman Corporation on 6/24/2016.
+
+
+
+
 
 \vspace{1.5mm}
 \section{\sc Experience}
-{\bf Sandia National Laboratories}, Albuquerque, New Mexico\hfill June, 2016--Present\\
-{\em Limited Term Employee:}  Center for Computing Research\\
+{\bf Sandia National Laboratories}, Albuquerque, New Mexico\hfill October, 2018 -- Present\\
+{\em Member of the Technical Staff:}  Center for Computing Research (Software Engineering and Research)\\
+Developing continuous integration/deployment workflows and infrastructure; advising teams on achieving a DevOps transformation; leading teams to design and develop tools to improve sustainability and reproducibility.
+
+{\bf Sandia National Laboratories}, Albuquerque, New Mexico\hfill September, 2017 -- October, 2018\\
+{\em Member of the Technical Staff:}  Center for Computing Research (Computational Mathematics)\\
+Introducing software engineering best practices into team workflows; developing code integration workflows and infrastructure.
+
+{\bf Sandia National Laboratories}, Albuquerque, New Mexico\hfill June, 2016 -- September, 2017\\
+{\em Limited Term Employee:}  Center for Computing Research (Computational Mathematics)\\
 Software engineering, development, maintenance, testing; version control instruction.
 
-{\bf Northrop Grumman Corporation}, Aurora, Colorado\hfill June, 2014--June, 2016\\
+{\bf Northrop Grumman Corporation}, Aurora, Colorado\hfill June, 2014 -- June, 2016\\
 {\em Engineer Systems II}\\
 Extending software capabilities; developing and testing algorithms; addressing data quality.
 
-{\bf Colorado School of Mines}, Golden, Colorado\hfill August, 2012--May, 2014\\
+{\bf Colorado School of Mines}, Golden, Colorado\hfill August, 2012 -- May, 2014\\
 {\em Graduate Teaching Fellow}\\
 Advanced Engineering Mathematics and Calculus 3; ``Problem Solving with Matlab'' tutorial series.
 
@@ -74,25 +117,60 @@ College Algebra; online education certified.
 
 {\bf Sandia National Laboratories}, Albuquerque, New Mexico\hfill Summer, 2012\\
 {\em SIP Graduate Professional Technical Summer Intern}\\
-Code validation via manufactured solutions.
+Code validation via manufactured solutions to partial differential equations.
 
-{\bf Colorado School of Mines}, Golden, Colorado\hfill August, 2011--May, 2012\\
+{\bf Colorado School of Mines}, Golden, Colorado\hfill August, 2011 -- May, 2012\\
 {\em Graduate Teaching Assistant}\\
 Recitation sections of Calculus 3.
 
-{\bf University of Tulsa}, Tulsa, Oklahoma\hfill August, 2009--May, 2011\\
+{\bf University of Tulsa}, Tulsa, Oklahoma\hfill August, 2009 -- May, 2011\\
 {\em Graduate Teaching Assistant}\\
 Quiz sections of Calculus 1 \& 2.
 
-{\bf University of Tulsa}, Tulsa, Oklahoma\hfill May, 2007--May, 2009\\
+{\bf University of Tulsa}, Tulsa, Oklahoma\hfill May, 2007 -- May, 2009\\
 {\em Plasma Physics Research Assistant}\\
 Computationally solved nonlinear magnetohydrodynamic (MHD) equations.
 
-\pagebreak
+
+
+
+
+
+\vspace{1.5mm}
 \section{\sc Projects}
+
+{\bf Unifying the DevOps Infrastructure Within Trilinos}\\*
+{\it Sandia National Laboratories}\hfill Summer, 2020--Present\\*
+Over the past few years, two distinct DevOps infrastructures have grown up within the \href{https://trilinos.github.io}{Trilinos} project.  Understanding that both solutions had their pros and cons, both were less flexible than desirable, and ultimately the prospect of maintaining two separate solutions long term would be fraught with error, it was determined a year-long effort would be made to replace them with a single solution incorporating the lessons learned from the past.  An initial investigation of the existing solutions was conducted over a two-month period, followed by a time of stakeholder requirements gathering.  A plan was drafted to cover two general-purpose components of consistently loading environments across machines, and consistently configuring a \href{https://cmake.org}{CMake}-based code.  The team is roughly half-way through the project, with it expected to wrap up at the end of September.  Modularity, flexibility, unit testing, code coverage, and documentation are all hallmarks of the way the team is tackling the problem.  The intent is to not only provide Trilinos with what it needs, but to provide the greater scientific software community with general tools they can use to improve the sustainability and replicability of the codes.
+
+{\bf Developing JOG-CI:  Connecting Jenkins, OpenStack, and GitLab CI/CD}\\*
+{\it Sandia National Laboratories}\hfill Spring, 2020--Summer, 2020\\*
+\href{https://www.openstack.org}{OpenStack} is a collection of components that allows you to maintain your own private cloud infrastructure.  The ability to rapidly stand up cloud tenants, running on corporate hardware behind the scenes, was desirable for lowering the barrier to entry for teams to get up and running with continuous integration.  A lightweight tool for standing up such tenants and connecting them to either Jenkins or GitLab (or both) was developed under my direction by our department's year-round intern, and that tool has been used by a handful of teams to stand up and tear down instances as needed, depending on changing testing needs.
+
+{\bf Faster Turnaround Improves Developer Productivity}\\*
+{\it Sandia National Laboratories}\hfill Winter, 2019--Summer, 2020\\*
+A complete run of EMPIRE's pipelines used to take about 20 hours.  Running only once per day, it was hard to determine where new bugs were introduced in a codebase that would see dozens of requests merged daily.  As such, a merge from develop to master would happen every few weeks, if we were lucky.  We undertook a major refactor of our pipelines, restructuring them with modularity in mind, such that they could fail and get actionable feedback to the team as soon as possible.  We additionally achieved parallelizing the testing across a collection of machines, again decreasing our time to notification of success or failure.  The dozens of Jenkins jobs used by each top-level pipeline are governed by a single Groovy Pipeline script, making maintainability and extensibility a breeze.  The end result was a reduction down to about five hours, such that the pipeline suite now runs multiple times a day.  With more frequent feedback, we're kept clean more often, and developers spend less time debugging and more time doing science.
+
+{\bf One Script to Rule Them All:  Unifying Build Processes Across Platforms}\\*
+{\it Sandia National Laboratories}\hfill Summer, 2019--Spring, 2020\\*
+The BuildScripts repository for the EMPIRE codebase had grown organically over time, with bash scripts for running on different platforms, with different configurations, etc.  Developers also had their own scripts for setting up their environment and configuring the code.  We undertook an effort to unify our build process across platforms and create a ``one build script to rule them all,'' so to speak, to be used by users, developers, and automation services.  Python was used for the sake of documentation (\href{https://www.sphinx-doc.org/en/master/}{Sphinx}), testing (\href{https://docs.pytest.org/en/latest/}{pytest}), and unified style guides.  Replicability was enhanced by building in both a comprehensive logging utility and the ability to replay prior runs of the script.  The tool was designed with modularity and flexibility in mind, such that it's easy extend existing pieces or plug in new ones when future needs arise.  Investing the time, money, and energy in developing such an infrastructure paid dividends in productivity, both for the scientific developers and the DevOps engineers.
+
+{\bf Developing the SPiFI Library and Associated Jenkins Pipelines}\\*
+{\it Sandia National Laboratories}\hfill Spring, 2018--Spring, 2019\\*
+In order to adequately test the git workflow mentioned directly below, a flexible pipeline was needed, and the \href{https://www.jenkins.io/doc/book/pipeline/}{Jenkins Pipeline plugin suite} with the \href{https://groovy-lang.org}{Apache Groovy} language under the hood provided the power necessary.  The plugin suite has a high barrier to entry, so a colleague and I worked closely together to develop the SEMS Pipeline Framework Infrastructure (SPiFI) library, I developing the pipeline itself and driving the requirements for the library, and he developing the library to ease and automate routine pipeline tasks.  The library has since been rolled out to half a dozen teams or so, and is used to drive hundreds of jobs on a daily basis.
+
+{\bf Stability with Respect to the Tip of Develop}\\*
+{\it Sandia National Laboratories}\hfill Fall, 2017--Fall, 2018\\*
+\href{https://trilinos.github.io}{Trilinos} is a collection of math libraries for large-scale, complex multi-physics problems on next generation high-performance computing architectures.  Its development is largely driven by a handful of physics application codes that are tightly coupled with it.  Because the applications drive the algorithm development, they would like to be able to use the latest commit on the develop branch, but at the same time they would like to make sure commits to Trilinos never break them and stall application development.  A git workflow was developed involving a fork of Trilinos and a secondary approved version of the develop branch, which is updated automatically via nightly testing.  In the event testing fails, the branch isn't updated, and the application team can continue development unhindered.  They can file an issue against Trilinos that will be resolved through Trilinos' usual process.  Flexibility is also afforded for the rare instances where simultaneous changes must be made to both the application and Trilinos codebases.  This approach has been used successfully by two separate application teams for the last few years.
+
+{\bf Defining Policies to Turn a Team and Project Around}\\*
+{\it Sandia National Laboratories}\hfill Summer, 2017--Fall, 2018\\*
+EMPIRE is a collection of next generation electromagnetic/electrostatic/fluid dynamic codes.  Prior to the summer of 2017, there was confusion as to who was on the team, what people were working on, what needed to be done, how one could get started, etc.  Pushes happened directly to the master branch, and there was minimal testing, code review, documentation, etc.  The team was introduced to the following:  \emph{GitLab issues}, description templates, and Kanban boards were used to track work and capture design discussions.  \emph{GitLab merge requests}, complete with code review and approval, were required to get changes into the develop branch.  \emph{Style guides} for both the code and documentation were developed to move toward a common look and feel.  A \emph{git workflow} was developed to ensure no direct pushes to master or develop, and master would be updated via nightly testing.  \emph{Automated testing} was established to test multiple machines and configurations to improve stability.  A \emph{monthly retrospective} was established to regularly check in on how well our policies were working for us and allow us to tweak them as needed.
+
+\pagebreak
 {\bf Git Instruction}\\*
-{\it Sandia National Laboratories}\hfill Spring, 2017--Present\\*
-Working with the Center for Computing Research University (CCR-U) group to teach courses introducing participants to version control via git, utilizing the Software Carpentry instruction style.  Previous courses have been very popular and received excellent feedback.  Currently developing an intermediate class to be offered in the fall, building off of the introductory class, and aimed at users with six to twelve months of experience working with git.
+{\it Sandia National Laboratories}\hfill Spring, 2017--Fall, 2019\\*
+Led the Center for Computing Research University (CCR-U) group in teaching courses introducing participants to version control via git, utilizing the \href{https://carpentries.org}{Software Carpentry} instruction style.  Developed both introductory and intermediate courses, which were very popular and received excellent feedback.  Served hundreds of Sandians.
 
 {\bf Panzer Memory Usage Refactor}\\*
 {\it Sandia National Laboratories}\hfill September, 2016--July, 2017\\*
@@ -139,16 +217,54 @@ The numerical equivalent to the project above, when attempting to solve a PDE on
 {\it University of Tulsa}\hfill May, 2007--May, 2009\\*
 Created a user interface between an eigenvalue code, an equilibrium code (SCOTS), and a nonlinear MHD evolution code (NIMROD) allowing for an exploration of parameter space to determine where modes were stable or resistive- or ideal-unstable.  Then ran nonlinearly from a starting point near the stability boundary and observed how the plasma evolved.
 
-\pagebreak
+
+
+
+
+
+\vspace{1.5mm}
 \section{\sc Presentations \&\\Publications}
 \newcounter{cnt}
 \setcounter{cnt}{1}
 \begin{list}{[\arabic{cnt}] }{\usecounter{cnt}\leftmargin=0.255in}
 \item
-Jason Matthew Gates, Roger P. Pawlowski, and Eric Christopher Cyr.  ``Panzer:  A Finite Element Assembly Engine within the Trilinos Framework.''  {\em Presentation.}  SIAM CSE 2017.  March 2017.
+Jason M. Gates, David Collins, and Josh Braun.  \href{https://figshare.com/articles/presentation/CI_Tools_as_Lego_Blocks_Build_Your_Ideal_Custom_Solution/14180096}{``CI Tools as Lego Blocks:  Build Your Ideal Custom Solution.''}  \emph{Presentation.}  SIAM CSE 2021.  March 2021.
 \item
-D P Brennan, P K Browning, J Gates, and R A M Van der Linden. ``Helicity-injected current drive and open flux instabilities in spherical tokamaks.''  {\em Plasma Physics and Controlled Fusion} 51.4 (2009):045004.
+Jason M. Gates, Josh Braun, and David Collins.  \href{https://cfwebprod.sandia.gov/cfdocs/CompResearch/docs/gates-unifying-build-processes-2.pdf}{``One Script to Rule Them All:  Unifying Build Processes Across Platforms.''}  \emph{Whitepaper.}  2020 Collegeville Workshop on Scientific Software.  July 2020.
+\item
+Jason M. Gates, Joe Frye, Brent Perschbacher, and Dena Vigil.  \href{https://cfwebprod.sandia.gov/cfdocs/CompResearch/docs/gates-git-productive1.pdf}{``Git Productive!''}  \emph{Whitepaper.}  2020 Collegeville Workshop on Scientific Software.  July 2020.
+\item
+Jason M. Gates.  \href{https://cfwebprod.sandia.gov/cfdocs/CompResearch/docs/gates-turnaround-improvements-poster.pdf}{``Faster Turnaround Improves Developer Productivity.''}  \emph{Poster.}  2020 Collegeville Workshop on Scientific Software.  July 2020.
+\item
+Vivek Sarkar, Jason Gates, Charles Ferenbaugh, Vadim Dyadechko, Anshu Dubey, Hartwig Anzt, and Pat Quillen.  \href{https://www.youtube.com/watch?v=zMmtUgEExZ8}{``Technical Approaches to Improve Developer Productivity for Scientific Software.''}  \emph{Panel discussion.}  2020 Collegeville Workshop on Scientific Software.  July 2020.
+\item
+Jim Willenbring, Ross Bartlett, and Jason Gates.  \href{https://www.youtube.com/watch?v=OyJ0AnesaRw}{``Git Solutions.''}  \emph{Interview.}  2020 Collegeville Workshop on Scientific Software.  July 2020.
+\item
+Jason M. Gates.  ``Training Best Practices.''  \emph{Tea time discussion.}  2020 Collegeville Workshop on Scientific Software.  July 2020.
+\item
+Jason M. Gates.  ``Introduction to GitDist.''  \emph{Presentation.}  Trilinos User-Developer Group Meeting 2019.  October 2019.
+\item
+Jason M. Gates.  ``Intro to SPiFI.''  \emph{Presentation.}  Trilinos User-Developer Group Meeting 2019.  October 2019.
+\item
+Jason M. Gates.  ``Stability w.r.t. the Tip of develop:  An Experience Report from Two Years In.''  \emph{Presentation.}  Trilinos User-Developer Group Meeting 2019.  October 2019.
+\item
+Patrick McCann, Rachael Ainsworth, Jason M. Gates, Jakob S. Jørgensen, Diego Alonso-Álvarez, and Cerys Lewis.  \href{https://software.ac.uk/blog/2019-07-03-how-do-you-motivate-researchers-adopt-better-software-practices}{``How do you motivate researchers to adopt better software practices?''}  \emph{Speed blog.}  Collaborations Workshop 2019.  July 2019.
+\item
+Jason M. Gates.  \href{https://figshare.com/articles/presentation/Collaborations_Workshop_2019_-_Lightning_talk_-_Jason_Gates/8039777}{``Training in Version Control and Project Management.''}  \emph{Lightning talk.}  Collaborations Workshop 2019.  March 2019.
+\item
+Jason M. Gates.  \href{https://cfwebprod.sandia.gov/cfdocs/CompResearch/docs/DefiningPoliciesToTurnATeamAndProjectAround.pdf}{``Defining Policies to Turn a Team and Project Around.''}  \emph{Poster.}  Third Conference of Research Software Engineers.  September 2018.
+\item
+Jason M. Gates.  ``Stability w.r.t. the Tip of Develop.''  \emph{Presentation.}  Trilinos User-Developer Group Meeting 2017.  October 2017.
+\item
+Jason Matthew Gates, Roger P. Pawlowski, and Eric Christopher Cyr.  \href{https://cfwebprod.sandia.gov/cfdocs/CompResearch/docs/siamCseTalk.pdf}{``Panzer:  A Finite Element Assembly Engine within the Trilinos Framework.''}  {\em Presentation.}  SIAM CSE 2017.  March 2017.
+\item
+D P Brennan, P K Browning, J Gates, and R A M Van der Linden. \href{https://iopscience.iop.org/article/10.1088/0741-3335/51/4/045004/pdf}{``Helicity-injected current drive and open flux instabilities in spherical tokamaks.''}  {\em Plasma Physics and Controlled Fusion} 51.4 (2009):045004.
 \end{list}
+
+
+
+
+
 
 \vspace{1.5mm}
 \section{\sc Honors \& Awards}
@@ -169,32 +285,46 @@ D P Brennan, P K Browning, J Gates, and R A M Van der Linden. ``Helicity-injecte
 \end{list}
 \end{multicols}
 
+
+
+
+
+
 \vspace{1.5mm}
 \section{\sc Skills}
 
+{\bf Software Engineering:}
+\begin{list}{$\diamond$}{\usecounter{cnt}\leftmargin=0.15in}
+	\item DevOps:  Well-versed in the \emph{three ways} and \emph{five ideals}.  Extensive experience serving as DevOps lead on computational science teams.
+	\item git:  Extensive experience developing, using, and teaching complex workflows, along with managing GitLab/GitHub projects.  Prefer GitLab as project management tool of choice.
+	\item Jenkins Pipelines:  Extensive experience maintaining hundreds of jobs via Pipeline scripts, along with crafting complex pipelines.  Modest experience administering Jenkins instances.
+	\item GitLab CI/CD:  Modest experience establishing GitLab CI/CD pipelines, along with coupling them to Jenkins for more complex workflows.
+	\item Project Management:  Experience with requirements elicitation, design, execution, monitoring, and stakeholder interaction.  Flexible within the plan, but will work hard to protect scope and team from external interference.
+\end{list}
 {\bf Programming:}
 \begin{list}{$\diamond$}{\usecounter{cnt}\leftmargin=0.15in}
-	\item C++:  Extensive experience developing and maintaining large object-oriented codes.  Experience creating and utilizing templated classes, including template metaprogramming.  Proficient with the Standard Template Library and RogueWave containers.  Some experience with Boost libraries.  Current language of choice.
-  \item Trilinos:  Panzer, Teuchos, Thyra, Phalanx, E/Tpetra, NOX, LOCA, Piro, Teko.
-	\item Fortran:  Experience developing and utilizing large, parallel, object-oriented codes.  Experience with Fortran 77/95/2003.
+	\item Python:  Extensive experience writing tools to unify build processes.  Substantial experience with Sphinx and pytest.  Some experience with the SciPy stack.  Current language of choice.
+	\item Groovy:  Extensive experience using advanced features to build complex Jenkins Pipeline suites.  A close second in language of choice.
+	\item C++:  Extensive experience developing and maintaining large object-oriented codes.  Experience creating and utilizing templated classes, including template metaprogramming.  Proficient with the Standard Template Library and RogueWave containers.  Some experience with Boost libraries.
+	\item Fortran 77/95/2003:  Experience developing and utilizing large, parallel, object-oriented codes.
 	\item OpenMPI:  Experience parallelizing Fortran FEM codes.
-	\item Python:  Experience writing test suites to validate results.  Some experience with the SciPy stack.
 	\item Perl:  Some experience patching installation scripts.
-  \item Julia:  Basic experience.
-	\item Java:  Basic experience.
+	\item Julia:  Basic experience.
+	\item Java, JavaScript:  Basic experience.
 	\item OpenMP:  Some experience parallelizing Fortran FEM codes.  Prefer OpenMPI.
 \end{list}
 {\bf Linux/Unix:}
 \begin{list}{$\diamond$}{\usecounter{cnt}\leftmargin=0.15in}
-	\item RHEL/CentOS/Fedora:  Experience installing and configuring.  Some experience with other system administrator tasks.
 	\item bash/tcsh:  Extensive scripting experience.
 	\item sed/awk/grep:  Extensive experience searching for, modifying, summarizing textual information.
+	\item RHEL/CentOS/Fedora:  Experience installing and configuring.  Some experience with other system administrator tasks.
 \end{list}
 {\bf Mathematical Tools:}
 \begin{list}{$\diamond$}{\usecounter{cnt}\leftmargin=0.15in}
-	\item \LaTeX:  Extensive experience typesetting a variety of works.
-	\item \emph{Mathematica}:  Certified by Wolfram Research.  Extensive experience with symbolic manipulations, visualizations, creating dynamic user interfaces to codes, etc.  Preferred mathematical working environment.
+	\item \LaTeX:  Extensive experience typesetting a variety of works.  Prefer to use tikZ, pgfplots, and pgfplotstable to automate the generation of papers from code-generated data using only \LaTeX.
+	\item \emph{Mathematica}:  Certified by Wolfram Research.  Extensive experience with symbolic manipulations, visualizations, creating dynamic user interfaces to codes, etc.
 	\item Matlab:  Extensive experience implementing numerical methods and visualizing results.  Developed ``Problem Solving with Matlab'' tutorial series.  Some experience with computer vision packages.
+	\item Trilinos:  Panzer, Teuchos, Thyra, Phalanx, E/Tpetra, NOX, LOCA, Piro, Teko.
 	\item PETSc/LAPACK:  Experience implementing parallel FEM codes.
 \end{list}
 {\bf Other:}
@@ -203,6 +333,25 @@ D P Brennan, P K Browning, J Gates, and R A M Van der Linden. ``Helicity-injecte
 	\item SketchUp:  Extensive experience utilizing for woodworking and carpentry design.
 	\item Blackboard/Desire2Learn/MyMathLab:  Experience managing courses; online education certified.
 \end{list}
+
+
+
+
+
+
+\vspace{1.5mm}
+\section{\sc Favorite Work-Related Books}
+\begin{list}{$\diamond$}{\usecounter{cnt}\leftmargin=0.15in}
+	\item \href{https://www.amazon.com/Phoenix-Project-DevOps-Helping-Business/dp/1942788290/ref=sr_1_2?dchild=1&keywords=gene+kim&qid=1616636863&sr=8-2}{The Phoenix Project (A Novel About IT, DevOps, and Helping Your Business Win)}, by Gene Kim.
+	\item \href{https://www.amazon.com/DevOps-Handbook-World-Class-Reliability-Organizations/dp/1942788002/ref=sr_1_3?dchild=1&keywords=gene+kim&qid=1616636863&sr=8-3}{The DevOps Handbook:  How to Create World-Class Agility, Reliability, and Security in Technology Organizations}, by Gene Kim, Jez Humble, Patrick DeBois, \& John Willis.
+	\item \href{https://www.amazon.com/Unicorn-Project-Developers-Disruption-Thriving/dp/1942788762/ref=sr_1_1?dchild=1&keywords=gene+kim&qid=1616636863&sr=8-1}{The Unicorn Project}, by Gene Kim.
+	\item \href{https://www.amazon.com/Five-Dysfunctions-Team-Leadership-Fable/dp/0787960756/ref=sr_1_1?crid=3I8FG8CLI6P3R&dchild=1&keywords=five+dysfunctions+of+a+team&qid=1616637023&sprefix=five+dysf%2Caps%2C270&sr=8-1}{The Five Dysfunctions of a Team:  A Leadership Fable}, by Patrick Lencioni.
+	\item \href{https://www.amazon.com/1501-Reward-Employees-Nelson-Ph-D/dp/0761168788/ref=sr_1_1?crid=2BGYF4F8U4317&dchild=1&keywords=1501+ways+to+reward+employees+by+bob+nelson&qid=1616637149&sprefix=1501+ways%2Caps%2C265&sr=8-1}{1501 Ways to Reward Employees}, by Bob Nelson.
+\end{list}
+
+
+
+
 
 \vspace{1.5mm}
 \section{\sc References}
