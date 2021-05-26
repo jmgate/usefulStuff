@@ -24,6 +24,7 @@
 [fetch]
   prune = true
 [alias]
+  h = help
   rv = revert
   re = remote
   cl = "!f() \
@@ -49,6 +50,7 @@
         git fetch $@; \
       fi; \
     }; f"
+  fa = "!git f --all"
   p = "!f() \
     { \
       if which removeWarning &> /dev/null; then \
@@ -103,7 +105,9 @@
       git reset HEAD~1 --hard; \
     }; f"
   l = log --decorate --graph
+  lf = log --decorate --graph --first-parent
   l1 = log --decorate --graph --oneline
+  lf1 = log --decorate --graph --first-parent --oneline
   la = log --decorate --graph --all
   la1 = log --decorate --graph --all --oneline
   dt = difftool --dir-diff
@@ -119,7 +123,6 @@
   bs = bisect start
   bg = bisect good
   bb = bisect bad
-  be = bisect reset bisect/bad
   be = "!f() \
     { \
       git bisect reset bisect/bad; \
@@ -182,7 +185,7 @@
     }; f"
   clean-old-branches = "!f() \
     { \
-      for b in $(git branch | grep -E \"before(Amend|Merge|Pull|Rebase|Reset)-.*-(master|develop)\"); do \
+      for b in $(git branch | grep -E \"before(Amend|Merge|Pull|Rebase|Reset)-.*-(master|develop|test-wip)\"); do \
         timestamp=$(echo $b | awk -F- '{print $2}'); \
         year=${timestamp:0:2}; \
         month=${timestamp:2:2}; \
@@ -197,6 +200,21 @@
       done; \
     }; f"
   bl = blame
+  ls-non-lfs-files = "!f() \
+    { \
+      { \
+        git ls-files && git lfs ls-files | cut -d' ' -f3-; \
+      } | sort | uniq -u; \
+    }; f"
+  rp = rev-parse
+  mb = merge-base
+  trilinos = "!f() \
+    { \
+      git clone --origin em-plasma git@github.com:EM-Plasma/Trilinos; \
+      cd Trilinos; \
+      git remote add trilinos git@github.com:trilinos/Trilinos; \
+      git fetch trilinos; \
+    }; f"
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f

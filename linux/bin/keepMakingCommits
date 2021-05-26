@@ -1,0 +1,5 @@
+#!/bin/bash
+crontab -l > mycron
+echo "*  *  *  *  * ~/bin/makeCommits" >> mycron
+crontab mycron
+rm mycron

@@ -2,7 +2,7 @@
 
 # Source global definitions.
 if [ -f /etc/bashrc ]; then
-  . /etc/bashrc
+  source /etc/bashrc
 fi
 
 # Load modules.
@@ -12,8 +12,11 @@ module purge
 source ~/.personal-git-configuration
 
 # Proxy settings.
-export http_proxy=http://wwwproxy.sandia.gov:80
-export https_proxy=http://wwwproxy.sandia.gov:80
+export http_proxy=http://jmgate:nopass@proxy.sandia.gov:80
+export ftp_proxy=${http_proxy}
+export https_proxy=${http_proxy}
+export SSL_CERT_FILE=/home/jmgate/sandia_root_ca_and_bc/sandia_root_ca.cer
+export REQUESTS_CA_BUNDLE=${SSL_CERT_FILE}
 
 # Set the command prompt.
 source ~/.personal-prompt

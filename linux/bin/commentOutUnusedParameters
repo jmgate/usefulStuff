@@ -4,16 +4,40 @@ import pprint
 import re
 import subprocess
 from sortedcontainers import SortedDict
+
+# Create an empty dictionary to store all our warning information.
 warnings = {}
+
+# Loop over the lines of the build output.
 for line in fileinput.input():
+
+    # Strip out the first eight characters.  These are control characters that
+    # switch on bold faced text.
     line = line[8:]
+
+    # This script only works on unused parameter warnings.
     if "-Wunused-parameter" in line:
+
+        # The line should have the following form:
+        # filename:row:col: warning: specifics
         pieces = line.split(":")
         filename = pieces[0]
         row = int(pieces[1])
         col = int(pieces[2])
         rest = pieces[-1]
+
+        # The parameter name appears within ‘these quotes’.  We need to
+        # strip off leading and trailing control characters.
         parameter = re.search("‘(.*)’", rest).group(1)[8:-6]
+
+        # Our warnings dictionary has the following structure:
+        # warnings = {
+        #   filename: {
+        #     row: SortedDict{
+        #       col: parameter
+        #     }
+        #   }
+        # }
         if filename in warnings:
             if row in warnings[filename]:
                 warnings[filename][row][col] = parameter
@@ -26,52 +50,29 @@ for line in fileinput.input():
 for (filename, data) in warnings.items():
     lineNumber = 1
     for line in fileinput.input(filename, inplace=True):
-#    for line in fileinput.input(filename):
         if lineNumber in data:
             for (row, stuff) in data.items():
                 if lineNumber == row:
-#                    start = [0]
-#                    for col, parameter in stuff.items():
-#                        print(line[start[-1]:col - 1] + "/* " + parameter + " */", end="")
-#                        start.append(col - 1 + len(parameter))
-#                    print(line[start[-1]:], end="")
-#                    print(line)
                     for (i, (col, parameter)) in enumerate(stuff.items()):
-#                        print(i, col, parameter)
                         col += i * 6
-#                        print("start = line.rfind(" + parameter + ", 0, " + str(col + len(parameter)) + ")")
                         start = line.rfind(parameter, 0, col + len(parameter))
-#                        print(start)
-#                        print("line = line[:" + str(start) + "] + \"/* \" + line[" + str(start) + ":]")
                         if line[start - 1] == "*":
                             line = line[:start] + " /* " + line[start:]
+                            stop = start + len(parameter) + 4
                         else:
                             line = line[:start] + "/* " + line[start:]
-#                        print(line)
-#                        print("stop = re.search(\"[,\s\)]\", line[" + str(col + 3) + ":]).start() + " + str(col + 3))
-#                        stop = re.search("[,\s\)]", line[col + 3:]).start() + col + 3
-                        stop = start + len(parameter) + 3
-#                        print(stop)
-#                        print("line = line[:" + str(stop) + "] + \" */\" + line[" + str(stop) + ":]")
+                            stop = start + len(parameter) + 3
                         line = line[:stop] + " */" + line[stop:]
-#                        print(line)
                     print(line, end="")
         else:
             print(line, end="")
         lineNumber += 1
 
-# Need to start a reverse search starting a col to find where parameter shows
-# up in the original line.  In cases with
-#   Type param = defaultValue
-# col points to the start of defaultValue instead of to the start of param.
-# Reverse search till you find param.  Forward search until you find ",", " ",
-# ")", or the end of the line.
-
-# Apparently it should be
-#   Type /* param */ = defaultValue
-
 # What about when Type param = defaultValue spans two lines?  col points to
 # defaultValue, but the first comment mark needs to be inserted in the prior
 # line.
 
-# If * immediately before param, insert space before comment start.
+# Sometimes you can have the same warning but the paths to the file are
+# different, as in /path/to/file vs /path/to/somewhere/../file, and this messes
+# things up because the script tries to comment out the parameter multiple
+# times.

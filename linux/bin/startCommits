@@ -1,0 +1,15 @@
+#!/bin/bash
+orig=$(pwd)
+cd ~/deleteMe
+git clone git@gitlab-ex.sandia.gov:CCR-U/GIT201-Spring-2019
+cd GIT201-Spring-2019
+date > fileForAutomaticallyMakingCommits
+git add fileForAutomaticallyMakingCommits
+git commit -m "Automatic commit"
+git pull && git push
+
+crontab -l > mycron
+echo "*  *  *  *  * ~/bin/makeCommits" >> mycron
+crontab mycron
+rm mycron
+cd $orig

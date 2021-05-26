@@ -22,14 +22,10 @@ usage()
 
 # Get command line arguments.
 trilinos=false
-charon=false
 empire=false
-drekar=false
 if [[ $# -eq 0 ]]; then
   trilinos=true
-  charon=true
   empire=true
-  drekar=true
 fi
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -43,16 +39,8 @@ while [[ $# -gt 0 ]]; do
       trilinos=true
       shift
       ;;
-    -c|--charon)
-      charon=true
-      shift
-      ;;
     -e|--empire)
       empire=true
-      shift
-      ;;
-    -d|--drekar)
-      drekar=true
       shift
       ;;
     *)
@@ -78,22 +66,8 @@ banner "Updating Trilinos' master and develop Branches"
 repos="Trilinos"
 gitdist --dist-repos=${repos} up trilinos master
 gitdist --dist-repos=${repos} up trilinos develop
-gitdist --dist-repos=${repos} up em-plasma develop jmgate em-plasma-develop
 info "Fetching Everything Else"
 gitdist --dist-repos=${repos} f --all
-banner "Cleaning up Old Branches"
-gitdist --dist-repos=${repos} clean-old-branches
-fi
-
-if [[ "$charon" == "true" ]]; then
-# Charon
-banner "Updating Charon"
-repos="Trilinos/tcad-charon,"
-repos="${repos}charon/charon-data,"
-repos="${repos}charon/charon-ouo-data"
-gitdist --dist-repos=${repos} checkout-if-not-on master
-info "Pulling from origin..."
-gitdist --dist-repos=${repos} pl
 banner "Cleaning up Old Branches"
 gitdist --dist-repos=${repos} clean-old-branches
 fi
@@ -106,16 +80,21 @@ repos="${repos}empire/EMPIRE-PIC,"
 repos="${repos}empire/EMPIRE-Fluid,"
 repos="${repos}empire/EMPIRE-Hybrid,"
 repos="${repos}empire/SPIN,"
+repos="${repos}empire/ExtendedTesting,"
 repos="${repos}empire/BuildScripts"
 gitdist --dist-repos=${repos} up em-plasma master
 gitdist --dist-repos=${repos} up em-plasma develop
 info "Fetching Everything Else"
 gitdist --dist-repos=${repos} f --all
+banner "Cleaning up Old Branches"
+gitdist --dist-repos=${repos} clean-old-branches
 info "Updating Project-Management"
 repos="empire/Project-Management"
 gitdist --dist-repos=${repos} checkout-if-not-on master
 echo "Pulling from origin..."
 gitdist --dist-repos=${repos} pl
+banner "Cleaning up Old Branches"
+gitdist --dist-repos=${repos} clean-old-branches
 info "Updating EPIXS"
 repos="empire/EPIXS"
 echo "Fetching from origin..."
@@ -128,24 +107,6 @@ info "Updating develop..."
 gitdist --dist-repos=${repos} checkout-if-not-on develop
 echo "Merging with origin/develop..."
 gitdist --dist-repos=${repos} mg --ff-only origin/develop
-banner "Cleaning up Old Branches"
-gitdist --dist-repos=${repos} clean-old-branches
-fi
-
-if [[ "$drekar" == "true" ]]; then
-# Drekar
-banner "Updating Drekar's master Branch"
-repos="Trilinos/DrekarBase"
-gitdist --dist-repos=${repos} up rppawlo master
-info "Fetching Everything Else"
-gitdist --dist-repos=${repos} f --all
-info "Updating DrekarSystemTests..."
-cd ${MY_HOME}/DrekarSystemTests
-svn update
-info "Updating DrekarDocuments..."
-cd ${MY_HOME}/DrekarDocuments
-svn update
-cd ${MY_HOME}
 banner "Cleaning up Old Branches"
 gitdist --dist-repos=${repos} clean-old-branches
 fi

@@ -1,0 +1,58 @@
+#!/bin/bash
+ctestLog="$1"
+#sed -n '/^Test project /,/^Build was aborted/p' console.txt > ${ctestLog}
+grep "Start\s\+[1-9]" ${ctestLog} | \
+  awk '{print $3}' | \
+  awk -F: '{print $1}' | \
+  sort -h > testsStarted
+numTestsStarted=$(wc -l testsStarted | awk '{print $1}')
+grep "Test.*Passed" ${ctestLog} | \
+  awk '{print $4}' | \
+  awk -F# '{print $2}' | \
+  awk -F: '{print $1}' | \
+  sort -h > testsPassed
+numTestsPassed=$(wc -l testsPassed | awk '{print $1}')
+grep "Test.*Failed" ${ctestLog} | \
+  awk '{print $4}' | \
+  awk -F# '{print $2}' | \
+  awk -F: '{print $1}' | \
+  sort -h > testsFailed
+numTestsFailed=$(wc -l testsFailed | awk '{print $1}')
+grep "Test.*Skipped" ${ctestLog} | \
+  awk '{print $4}' | \
+  awk -F# '{print $2}' | \
+  awk -F: '{print $1}' | \
+  sort -h > testsSkipped
+numTestsSkipped=$(wc -l testsSkipped | awk '{print $1}')
+cat testsPassed testsFailed testsSkipped | \
+  sort -h > testsCompleted
+diff --new-line-format="" --unchanged-line-format="" testsStarted \
+  testsCompleted > testsHanging
+rm testsStarted testsCompleted
+numTestsHanging=$(wc -l testsHanging | awk '{print $1}')
+echo "✤"
+echo "✤ Tests Passed (${numTestsPassed}/${numTestsStarted}):"
+echo "✤"
+cat testsPassed | column
+rm testsPassed
+echo "✤"
+echo "✤ Tests Failed (${numTestsFailed}/${numTestsStarted}):"
+echo "✤"
+#cat testsFailed | column
+for t in $(cat testsFailed); do
+  grep "Start $t" ${ctestLog} | awk '{print $3,$4}'
+done
+rm testsFailed
+echo "✤"
+echo "✤ Tests Skipped (${numTestsSkipped}/${numTestsStarted}):"
+echo "✤"
+cat testsSkipped | column
+rm testsSkipped
+echo "✤"
+echo "✤ Tests Hanging (${numTestsHanging}/${numTestsStarted}):"
+echo "✤"
+#cat testsHanging | column
+for t in $(cat testsHanging); do
+  grep "Start $t" ${ctestLog} | awk '{print $3,$4}'
+done
+rm testsHanging

@@ -1,0 +1,11 @@
+#!/bin/bash
+cd /workspace/Trilinos/packages
+for d in $(ls -d */); do
+  cd $d
+  echo $d
+  echo "  1 year ago:   $(git log --oneline --since="1 year ago" . | wc -l)"
+  for i in {2..5}; do
+    echo "  $i years ago:  $(($(git log --oneline --since="$i years ago" . | wc -l) - $(git log --oneline --since="$((i - 1)) months ago" . | wc -l)))"
+  done
+  cd ..
+done

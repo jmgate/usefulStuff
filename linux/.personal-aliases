@@ -4,7 +4,6 @@
 alias .b="source ~/.bashrc"
 alias .bp="source ~/.bash_profile"
 alias vi=vim
-alias less="less -R"
 alias grep="grep --color --exclude-dir=doc --exclude-dir=.git"
 alias rgrep="grep -rsIn"
 alias f="find . -name"

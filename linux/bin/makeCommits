@@ -1,0 +1,11 @@
+#!/bin/bash
+orig=$(pwd)
+cd ~/deleteMe/GIT201-Spring-2019
+for i in {1..2}; do
+  date >> fileForAutomaticallyMakingCommits
+  git add fileForAutomaticallyMakingCommits
+  git commit -m "Automatic commit"
+  git pull && git push
+  sleep 20
+done
+cd $orig

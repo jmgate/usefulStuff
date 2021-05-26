@@ -17,6 +17,14 @@ _git_finish()
 {
   _git_checkout
 } # end of _git_finish()
+_git_rp()
+{
+  _git_checkout
+} # end of _git_rp()
+_git_mb()
+{
+  _git_merge_base
+} # end of _git_mb()
 
 # gitdist configuration.
 export GITDIST_MOVE_TO_BASE_DIR=EXTREME_BASE

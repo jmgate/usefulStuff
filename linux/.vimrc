@@ -309,9 +309,9 @@ function! DoxygenBrief()
   let end = 130 - tw - 1
   let indent = (col(".") - 1)
   let reps = tw - indent - 1
-  .s/\(\S.*\)/\/**\r\r\1/
+  .s/\(\S.*\)/\/**\r\r\r\1/
   .s/^/\=("".repeat(" ", indent))/
-  normal k
+  normal 2k
   .s/^.*$/ *  \\brief Description./
   .s/$/\=("".repeat(" ", reps - 23))/
   .s/$/\/\/ JMG:  Fill this out./
